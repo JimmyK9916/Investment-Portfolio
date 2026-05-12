@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Investment Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+:root{
+  --bg:#0d0f12;--surface:#161a1f;--surface2:#1e242b;
+  --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.13);
+  --text:#e8eaed;--muted:#6b7280;--muted2:#9ca3af;
+  --green:#34d399;--green-dim:rgba(52,211,153,0.12);
+  --red:#f87171;--red-dim:rgba(248,113,113,0.12);
+  --blue:#60a5fa;--purple:#a78bfa;--amber:#fbbf24;--orange:#fb923c;
+  --r:10px;--rl:14px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;line-height:1.5}
+.app{max-width:1120px;margin:0 auto;padding:32px 20px 60px}
+
+.hdr-top{display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:20px}
+.eyebrow{font-size:11px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.total-val{font-size:44px;font-weight:300;letter-spacing:-1.5px;line-height:1}
+.total-val sup{font-size:22px;color:var(--muted);font-weight:300;vertical-align:super}
+.hdr-right{text-align:right}
+.updated{font-size:11px;color:var(--muted);margin-bottom:6px}
+.pill{display:inline-flex;align-items:center;gap:5px;border-radius:20px;padding:5px 14px;font-size:12px;font-weight:500;border:1px solid}
+.pill.pos{background:var(--green-dim);border-color:rgba(52,211,153,0.3);color:var(--green)}
+.pill.neg{background:var(--red-dim);border-color:rgba(248,113,113,0.3);color:var(--red)}
+
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border-radius:var(--rl);overflow:hidden;border:1px solid var(--border);margin-bottom:20px}
+.metric{background:var(--surface);padding:18px 20px}
+.metric.hl{background:#0f1a14}
+.metric-divider{background:var(--surface);padding:7px 20px;grid-column:1/-1;border-top:1px solid var(--border2)}
+.metric-divider span{font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.mlabel{font-size:10px;font-weight:500;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);margin-bottom:7px}
+.mval{font-size:19px;font-weight:500;font-family:'DM Mono',monospace}
+.msub{font-size:11px;color:var(--muted);margin-top:3px}
+.pos{color:var(--green)}.neg{color:var(--red)}.neutral{color:var(--muted2)}.amb{color:var(--amber)}
+
+.g2{display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:16px}
+.g22{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:20px 22px}
+.ctitle{font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:16px}
+
+.tabs{display:flex;gap:2px;background:var(--surface);border-radius:var(--r);padding:3px;margin-bottom:20px;width:fit-content;border:1px solid var(--border)}
+.tab{font-size:12px;font-weight:500;letter-spacing:.03em;padding:7px 18px;border-radius:7px;cursor:pointer;color:var(--muted);border:none;background:none;transition:all .15s;font-family:'DM Sans',sans-serif}
+.tab:hover{color:var(--text)}
+.tab.active{background:var(--surface2);color:var(--text);border:1px solid var(--border2)}
+
+.htable{width:100%;border-collapse:collapse}
+.htable th{font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding:0 0 12px;text-align:right;border-bottom:1px solid var(--border)}
+.htable th:first-child{text-align:left}
+.htable td{padding:12px 0;border-bottom:1px solid var(--border);vertical-align:middle}
+.htable tr:last-child td{border-bottom:none}
+.htable td:not(:first-child){text-align:right;font-family:'DM Mono',monospace;font-size:13px}
+.ticker{font-weight:600;font-size:13px;letter-spacing:.03em}
+.bw{width:48px;height:3px;background:var(--surface2);border-radius:2px;display:inline-block;vertical-align:middle;margin-left:8px}
+.bf{height:3px;border-radius:2px}
+.tp-row td{color:var(--muted);font-size:12px}
+.tot-row td{font-weight:600;font-size:13px;border-top:1px solid var(--border2) !important;padding-top:14px !important}
+
+.al-layout{display:flex;gap:28px;align-items:flex-start;flex-wrap:wrap}
+.al-legend{flex:1;min-width:180px;display:flex;flex-direction:column;gap:8px}
+.al-item{display:flex;align-items:center;gap:8px;font-size:12px}
+.al-dot{width:8px;height:8px;border-radius:2px;flex-shrink:0}
+.al-name{color:var(--muted2);flex:1}
+.al-pct{font-family:'DM Mono',monospace;font-size:11px;color:var(--text)}
+.al-amt{font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);width:72px;text-align:right}
+
+.egrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:10px}
+.erow{display:flex;align-items:center;gap:10px;background:var(--surface2);border-radius:var(--r);padding:10px 14px;border:1px solid var(--border)}
+.eticker{font-size:12px;font-weight:600;letter-spacing:.04em;width:76px;flex-shrink:0}
+.efield{display:flex;flex-direction:column;gap:4px}
+.efield label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+.efield input{background:var(--bg);border:1px solid var(--border2);border-radius:6px;color:var(--text);font-family:'DM Mono',monospace;font-size:12px;padding:5px 8px;width:96px;outline:none;transition:border .15s}
+.efield input:focus{border-color:var(--green)}
+.eactions{display:flex;gap:10px;margin-top:16px;align-items:center;flex-wrap:wrap}
+.btn{font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;padding:8px 20px;border-radius:var(--r);cursor:pointer;border:none;letter-spacing:.03em}
+.btn-p{background:var(--green);color:#071a12}.btn-p:hover{opacity:.85}
+.btn-g{background:var(--surface2);color:var(--muted2);border:1px solid var(--border2)}.btn-g:hover{color:var(--text)}
+.smsg{font-size:11px;color:var(--green)}
+.note-box{background:rgba(251,191,36,.06);border:1px solid rgba(251,191,36,.2);border-radius:var(--r);padding:11px 15px;font-size:12px;color:var(--amber);margin-bottom:16px}
+.info-box{background:rgba(96,165,250,.06);border:1px solid rgba(96,165,250,.18);border-radius:var(--r);padding:14px 16px;font-size:12px;color:#93c5fd;margin-bottom:20px;line-height:1.7}
+.info-box strong{color:var(--text);font-weight:600}
+.bench-box{background:rgba(251,146,60,.06);border:1px solid rgba(251,146,60,.2);border-radius:var(--r);padding:12px 16px;font-size:12px;color:var(--orange);margin-top:12px;line-height:1.6}
+.bench-box strong{color:var(--text);font-weight:600}
+.leg{display:flex;gap:18px;margin-top:12px;font-size:11px;color:var(--muted);flex-wrap:wrap}
+.leg span{display:flex;align-items:center;gap:5px}
+
+@media(max-width:800px){.metrics{grid-template-columns:repeat(2,1fr)}.g2,.g22{grid-template-columns:1fr}}
+@media(max-width:560px){
+  .total-val{font-size:32px}
+  .htable th:nth-child(3),.htable td:nth-child(3){display:none}
+  .htable th:nth-child(5),.htable td:nth-child(5){display:none}
+  .tabs{width:100%}.tab{flex:1;padding:7px 5px;font-size:11px}
+  .app{padding:18px 14px 40px}
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <div class="hdr-top">
+    <div>
+      <div class="eyebrow">Portfolio tracker</div>
+      <div class="total-val"><sup>$</sup><span id="hdr-total">102,641</span></div>
+    </div>
+    <div class="hdr-right">
+      <div class="updated">Last updated: May 2026</div>
+      <div id="mpill" class="pill pos">▲ +$9,108 P&amp;L vs Apr 26</div>
+    </div>
+  </div>
+
+  <div class="metrics">
+    <div class="metric hl"><div class="mlabel">Own cash invested</div><div class="mval" id="m-own">$77,107</div><div class="msub">your money, out of pocket</div></div>
+    <div class="metric hl"><div class="mlabel">Current value</div><div class="mval" id="m-val">$102,641</div><div class="msub">all open positions</div></div>
+    <div class="metric hl"><div class="mlabel">Total return</div><div class="mval pos" id="m-ret">+$25,534</div><div class="msub pos" id="m-retp">+33.1% on own cash</div></div>
+    <div class="metric hl"><div class="mlabel">P&amp;L this month</div><div class="mval pos" id="m-month">+$9,108</div><div class="msub" id="m-monthsub">vs Apr 2026</div></div>
+    <div class="metric-divider"><span>Breakdown</span></div>
+    <div class="metric"><div class="mlabel">Cost base (open positions)</div><div class="mval neutral" id="m-cost">$86,705</div><div class="msub">incl. $9,598 recycled gains</div></div>
+    <div class="metric"><div class="mlabel">Unrealised P&amp;L</div><div class="mval" id="m-ur">+$15,936</div><div class="msub">value vs cost base</div></div>
+    <div class="metric"><div class="mlabel">S&amp;P 500 benchmark</div><div class="mval" id="m-bench" style="color:var(--orange)">$128,985</div><div class="msub" id="m-bench-sub" style="color:var(--orange)">+67.3% same cash timing</div></div>
+    <div class="metric"><div class="mlabel">vs S&amp;P 500</div><div class="mval neg" id="m-vs-bench">-$26,344</div><div class="msub" id="m-vs-bench-sub">-34.2pp behind benchmark</div></div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" data-tab="home">Overview</button>
+    <button class="tab" data-tab="holdings">Holdings</button>
+    <button class="tab" data-tab="allocation">Allocation</button>
+    <button class="tab" data-tab="update">Update values</button>
+  </div>
+
+  <!-- OVERVIEW -->
+  <div id="tab-home">
+    <div class="g2">
+      <div class="card">
+        <div class="ctitle">Portfolio value vs own cash &amp; S&amp;P 500 benchmark</div>
+        <div style="position:relative;width:100%;height:230px"><canvas id="cv" role="img" aria-label="Portfolio value, own cash, and S&P500 benchmark over time">Portfolio value over time.</canvas></div>
+        <div class="leg">
+          <span><span style="width:14px;height:2px;background:#34d399;display:inline-block;border-radius:1px"></span>Portfolio value</span>
+          <span><span style="width:14px;height:0;border-top:2px dashed rgba(251,146,60,0.9);display:inline-block"></span>S&amp;P 500 benchmark</span>
+          <span><span style="width:14px;height:0;border-top:2px dashed rgba(251,191,36,0.8);display:inline-block"></span>Own cash in</span>
+          <span><span style="width:14px;height:0;border-top:2px dashed rgba(96,165,250,0.4);display:inline-block"></span>Cost base</span>
+        </div>
+        <div class="bench-box">
+          <strong>vs benchmark:</strong> Investing the same cash at the same times into the S&amp;P 500 would now be worth <strong id="bb-bench">$128,985</strong> — a return of <strong style="color:var(--orange)" id="bb-benchret">+67.3%</strong> vs your portfolio's <strong class="pos" id="bb-portret">+33.1%</strong>. You're <strong id="bb-diff" class="neg">$26,344 behind</strong> the benchmark on a like-for-like basis.
+        </div>
+      </div>
+      <div class="card">
+        <div class="ctitle">Allocation</div>
+        <div style="position:relative;width:100%;height:190px"><canvas id="ca-home" role="img" aria-label="Allocation donut">Allocation.</canvas></div>
+        <div id="leg-home" style="margin-top:10px;display:flex;flex-direction:column;gap:5px"></div>
+      </div>
+    </div>
+    <div class="g22">
+      <div class="card">
+        <div class="ctitle">Monthly P&amp;L change</div>
+        <div style="position:relative;width:100%;height:175px"><canvas id="cm" role="img" aria-label="Monthly P&L change">Monthly P&amp;L.</canvas></div>
+      </div>
+      <div class="card">
+        <div class="ctitle">Total return on own cash</div>
+        <div style="position:relative;width:100%;height:175px"><canvas id="cc" role="img" aria-label="Total return">Total return.</canvas></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HOLDINGS -->
+  <div id="tab-holdings" style="display:none">
+    <div class="info-box">
+      <strong>Reading this table:</strong> Cost base includes $9,598 of recycled Spaceship profits (sold Feb 26). Your true out-of-pocket is <strong id="ib-own">$77,107</strong>, giving a total return of <strong id="ib-ret" class="pos">+$25,534 (+33.1%)</strong> on own cash.
+    </div>
+    <div class="card">
+      <div class="ctitle">Current holdings — May 2026</div>
+      <div style="overflow-x:auto">
+        <table class="htable">
+          <thead><tr>
+            <th>Asset</th><th>Value</th><th>Cost base</th><th>P&amp;L $</th><th>P&amp;L %</th><th>Alloc</th>
+          </tr></thead>
+          <tbody id="hbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ALLOCATION -->
+  <div id="tab-allocation" style="display:none">
+    <div class="card">
+      <div class="ctitle">Portfolio allocation</div>
+      <div class="al-layout">
+        <div style="position:relative;width:210px;height:210px;flex-shrink:0"><canvas id="ca-full">Allocation.</canvas></div>
+        <div class="al-legend" id="leg-full"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- UPDATE -->
+  <div id="tab-update" style="display:none">
+    <div class="note-box">⚡ Enter new values each month then click Save. The P&amp;L this month figure uses the stored history — also update the "Current month P&amp;L" field to keep the pill accurate.</div>
+    <div class="card">
+      <div class="ctitle">Update holdings</div>
+      <div class="egrid" id="egrid"></div>
+      <div style="margin-top:16px;padding:14px;background:var(--surface2);border-radius:var(--r);border:1px solid var(--border);display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+        <div class="efield">
+          <label>Current month P&amp;L ($)</label>
+          <input type="number" id="cur-pl" value="21910" step="1" style="width:130px">
+        </div>
+        <div style="font-size:11px;color:var(--muted);max-width:300px">Enter the total Profit/Loss figure from your spreadsheet for this month (e.g. 21910). Used to calculate the MoM P&amp;L delta correctly.</div>
+      </div>
+      <div class="eactions">
+        <button class="btn btn-p" onclick="saveEdits()">Save &amp; refresh</button>
+        <button class="btn btn-g" onclick="switchTab('home')">Cancel</button>
+        <span class="smsg" id="smsg"></span>
+      </div>
+    </div>
+  </div>
+
+</div>
+<script>
+// ── HISTORY ──────────────────────────────────────────────────────────────────
+// [label, portfolioValue, costBase, spreadsheetPL, tpActive, sp500Benchmark]
+// spreadsheetPL  = value - costBase (matches your Excel P/L column exactly)
+// sp500Benchmark = shadow portfolio value if same cash was invested in S&P500
+//                  at the same times (computed from actual S&P500 monthly closes)
+// tpActive       = true from Feb 26 (Spaceship sold, proceeds recycled)
+// ownCash        = tpActive ? costBase - 9598 : costBase
+
+const TP = 9598;
+
+const H = [
+  // label       val      cost     pl       tp     sp500bench
+  ['Dec 22',   26602,   34895,  -8544,  false,   34895],
+  ['Jan 23',   27359,   36016,  -8904,  false,   36447],
+  ['Feb 23',   31909,   37126,  -5464,  false,   38652],
+  ['Mar 23',   33382,   38593,  -5474,  false,   39066],
+  ['Apr 23',   35435,   39427,  -4233,  false,   41405],
+  ['May 23',   36110,   39827,  -3954,  false,   42053],
+  ['Jun 23',   42804,   41125,   1433,  false,   45372],
+  ['Jul 23',   42320,   43227,  -1147,  false,   49173],
+  ['Aug 23',   43668,   46028,  -2629,  false,   51081],
+  ['Sep 23',   45398,   46228,  -1096,  false,   51083],
+  ['Oct 23',   43535,   46629,  -3334,  false,   49745],
+  ['Nov 23',   47243,   49129,  -2124,  false,   54594],
+  ['Dec 23',   50792,   49529,   1047,  false,   57748],
+  ['Jan 24',   54544,   49627,   4700,  false,   59318],
+  ['Feb 24',   54285,   49628,   4432,  false,   61880],
+  ['Mar 24',   56518,   49628,   6665,  false,   63839],
+  ['Apr 24',   57872,   51630,   6028,  false,   64913],
+  ['May 24',   54035,   51629,   2216,  false,   66694],
+  ['Jun 24',   54520,   51629,   2697,  false,   68986],
+  ['Jul 24',   55871,   51629,   4036,  false,   70613],
+  ['Aug 24',   54260,   54129,    -47,  false,   72595],
+  ['Sep 24',   55962,   54607,   1165,  false,   74708],
+  ['Oct 24',   58128,   55557,   2390,  false,   77865],
+  ['Dec 24',   74756,   57468,  17114,  false,   82714],
+  ['Jan 25',   76115,   59882,  16061,  false,   84696],
+  ['Feb 25',   79558,   60409,  18977,  false,   86061],
+  ['Mar 25',   73869,   61338,  12357,  false,   81935],
+  ['Apr 25',   69335,   63705,   5471,  false,   79769],
+  ['May 25',   73037,   65672,   7221,  false,   88294],
+  ['Jun 25',   79820,   66633,  13027,  false,   92583],
+  ['Sep 25',   87295,   66634,  20481,  false,  101091],
+  ['Oct 25',  101036,   76633,  24226,  false,  113419],
+  ['Nov 25',  107509,   78112,  29236,  false,  114985],
+  ['Dec 25',  103852,   78032,  25642,  false,  116898],
+  ['Jan 26',  103522,   78033,  25324,  false,  118197],
+  ['Feb 26',  102589,   85284,  26727,  true,   117595],
+  ['Mar 26',  100915,   86706,  21110,  true,   114933],
+  ['Apr 26',   92928,   86703,  12802,  true,   117336],
+  ['May 26',  102641,   86705,  21910,  true,   128985],
+];
+
+// ownCash per history row
+function hOwn(h){ return h[4] ? h[2]-TP : h[2]; }
+
+// ── DEFAULT HOLDINGS (May 2026) ──────────────────────────────────────────────
+const DEF = [
+  {key:'BHP',    name:'BHP',        val:2143,  cost:2017 },
+  {key:'NVA',    name:'NVA',        val:1838,  cost:2020 },
+  {key:'RIO',    name:'RIO',        val:2580,  cost:1925 },
+  {key:'NAS100', name:'NAS100',     val:38142, cost:23889},
+  {key:'MSFT',   name:'MSFT',       val:2817,  cost:1981 },
+  {key:'META',   name:'META',       val:3381,  cost:1988 },
+  {key:'GOOGL',  name:'GOOGL',      val:10632, cost:3747 },
+  {key:'ACDC',   name:'ACDC',       val:5633,  cost:4920 },
+  {key:'CRYPTO', name:'Crypto',     val:2966,  cost:11500},
+  {key:'WDS',    name:'WDS',        val:232,   cost:null },
+  {key:'SCAPS',  name:'Small caps', val:10507, cost:11400},
+  {key:'NIC',    name:'NIC',        val:2797,  cost:2517 },
+  {key:'URNM',   name:'URNM',       val:4807,  cost:5025 },
+  {key:'WIRE',   name:'WIRE',       val:4676,  cost:5015 },
+  {key:'USETFS', name:'US ETFs',    val:7370,  cost:8761 },
+  {key:'SLVM',   name:'SLVM',       val:2120,  cost:1819 },
+];
+
+const COL = ['#34d399','#60a5fa','#f472b6','#fbbf24','#a78bfa','#fb923c',
+             '#38bdf8','#4ade80','#e879f9','#f87171','#67e8f9','#facc15',
+             '#86efac','#93c5fd','#c4b5fd','#fda4af'];
+
+// ── STATE ────────────────────────────────────────────────────────────────────
+let hlds = loadH(), CI = {};
+// currentMonthPL: the user's recorded P/L figure for the current month.
+// Used ONLY for the MoM delta pill. Defaults to H[last][3].
+let currentMonthPL = loadCurPL();
+
+function loadH(){ try{ const s=localStorage.getItem('inv_v9'); if(s) return JSON.parse(s); }catch(e){} return DEF.map(h=>({...h})); }
+function saveH(){ try{ localStorage.setItem('inv_v9',JSON.stringify(hlds)); }catch(e){} }
+function loadCurPL(){ try{ const s=localStorage.getItem('inv_curpl'); if(s) return parseFloat(s); }catch(e){} return H[H.length-1][3]; }
+function saveCurPL(v){ try{ localStorage.setItem('inv_curpl',String(v)); }catch(e){} }
+
+// ── STATS ────────────────────────────────────────────────────────────────────
+function stats(){
+  const tv   = hlds.reduce((s,h)=>s+h.val,0);
+  const wc   = hlds.filter(h=>h.cost!==null);
+  const cost = wc.reduce((s,h)=>s+(h.cost||0),0);
+  const own  = cost - TP;          // current period is always post-Spaceship-sale
+  const ret  = tv - own;
+  const retp = own>0?(ret/own)*100:0;
+  const ur   = tv - cost;
+
+  // MoM P&L delta: currentMonthPL vs previous history entry
+  // This matches your spreadsheet's delta row exactly.
+  const prevPL    = H[H.length-2][3];  // Apr 26 = 12802
+  const month     = currentMonthPL - prevPL;
+  const prevLabel = H[H.length-2][0];
+
+  // Benchmark
+  const benchVal  = H[H.length-1][5];
+  const benchRet  = benchVal - own;
+  const benchRetp = own>0?(benchRet/own)*100:0;
+  const vsBench   = tv - benchVal;
+  const vsBenchPp = retp - benchRetp;
+
+  return { tv, cost, own, ret, retp, ur, month, prevLabel, benchVal, benchRet, benchRetp, vsBench, vsBenchPp };
+}
+
+// ── FORMAT ───────────────────────────────────────────────────────────────────
+const fmt  = (n,d=0) => new Intl.NumberFormat('en-AU',{maximumFractionDigits:d,minimumFractionDigits:d}).format(n);
+const fv   = n => '$'+fmt(n);
+const fp   = n => (n>=0?'+$':'-$')+fmt(Math.abs(n));
+const fpc  = n => (n>=0?'+':'')+n.toFixed(1)+'%';
+
+// ── RENDER METRICS ───────────────────────────────────────────────────────────
+function renderMetrics(){
+  const s = stats();
+  document.getElementById('hdr-total').textContent = fmt(s.tv);
+  document.getElementById('m-own').textContent     = fv(s.own);
+  document.getElementById('m-val').textContent     = fv(s.tv);
+  document.getElementById('m-cost').textContent    = fv(s.cost);
+
+  const re = document.getElementById('m-ret');
+  re.textContent = fp(s.ret); re.className='mval '+(s.ret>=0?'pos':'neg');
+  const rp = document.getElementById('m-retp');
+  rp.textContent = fpc(s.retp)+' on own cash'; rp.className='msub '+(s.retp>=0?'pos':'neg');
+
+  const me = document.getElementById('m-month');
+  me.textContent = fp(s.month); me.className='mval '+(s.month>=0?'pos':'neg');
+  document.getElementById('m-monthsub').textContent = 'vs '+s.prevLabel;
+
+  const ue = document.getElementById('m-ur');
+  ue.textContent = fp(s.ur); ue.className='mval '+(s.ur>=0?'pos':'neg');
+
+  // Benchmark metrics
+  document.getElementById('m-bench').textContent     = fv(s.benchVal);
+  document.getElementById('m-bench-sub').textContent = fpc(s.benchRetp)+' same cash timing';
+  const vb = document.getElementById('m-vs-bench');
+  vb.textContent = fp(s.vsBench); vb.className='mval '+(s.vsBench>=0?'pos':'neg');
+  document.getElementById('m-vs-bench-sub').textContent = fpc(s.vsBenchPp)+' vs benchmark';
+
+  // Pill — reads directly from currentMonthPL vs H[-2].pl (no live recompute)
+  const pi = document.getElementById('mpill');
+  pi.textContent = (s.month>=0?'▲ ':'▼ ')+fp(s.month)+' P&L vs '+s.prevLabel;
+  pi.className   = 'pill '+(s.month>=0?'pos':'neg');
+
+  // Benchmark blurb
+  const bb = document.getElementById('bb-bench'); if(bb) bb.textContent = fv(s.benchVal);
+  const bbr = document.getElementById('bb-benchret'); if(bbr){ bbr.textContent=fpc(s.benchRetp); bbr.className=s.benchRetp>=0?'pos':'neg'; }
+  const bbp = document.getElementById('bb-portret'); if(bbp){ bbp.textContent=fpc(s.retp); bbp.className=s.retp>=0?'pos':'neg'; }
+  const bbd = document.getElementById('bb-diff');
+  if(bbd){ bbd.textContent=fp(s.vsBench)+' behind benchmark'; bbd.className=s.vsBench>=0?'pos':'neg'; }
+
+  // Info box
+  const io = document.getElementById('ib-own'); if(io) io.textContent=fv(s.own);
+  const ir = document.getElementById('ib-ret'); if(ir){ ir.textContent=fp(s.ret)+' ('+fpc(s.retp)+')'; ir.className=s.ret>=0?'pos':'neg'; }
+}
+
+// ── RENDER HOLDINGS ──────────────────────────────────────────────────────────
+function renderHoldings(){
+  const s=stats(), tv=s.tv;
+  const sorted=[...hlds].sort((a,b)=>b.val-a.val);
+  const tb=document.getElementById('hbody'); tb.innerHTML='';
+  sorted.forEach(h=>{
+    const ci=DEF.findIndex(d=>d.key===h.key);
+    const col=COL[ci%COL.length];
+    const hc=h.cost!==null&&h.cost>0;
+    const pl=hc?h.val-h.cost:null;
+    const pp=hc?(pl/h.cost)*100:null;
+    const al=tv>0?(h.val/tv)*100:0;
+    const pc=pl===null?'neutral':pl>=0?'pos':'neg';
+    tb.innerHTML+=`<tr>
+      <td><span class="ticker" style="color:${col}">${h.name}</span>
+          <span class="bw"><span class="bf" style="width:${Math.min(al*4,100)}%;background:${col}"></span></span></td>
+      <td>${fv(h.val)}</td>
+      <td class="neutral">${h.cost?fv(h.cost):'—'}</td>
+      <td class="${pc}">${pl!==null?fp(pl):'—'}</td>
+      <td class="${pc}">${pp!==null?fpc(pp):'—'}</td>
+      <td class="neutral" style="font-size:11px">${al.toFixed(1)}%</td>
+    </tr>`;
+  });
+  tb.innerHTML+=`<tr class="tp-row">
+    <td><span>Recycled gains (TPs)</span></td><td>—</td><td>—</td>
+    <td class="amb">+$9,598</td><td style="font-size:11px;color:var(--muted)">in cost base</td><td>—</td>
+  </tr>
+  <tr class="tot-row">
+    <td>Total (cost base)</td><td>${fv(tv)}</td>
+    <td class="neutral">${fv(s.cost)}</td>
+    <td class="${s.ur>=0?'pos':'neg'}">${fp(s.ur)}</td>
+    <td class="${s.ur>=0?'pos':'neg'}" style="font-size:11px">vs cost base</td><td></td>
+  </tr>
+  <tr>
+    <td style="padding-top:8px;font-size:12px;color:var(--muted)">Own cash basis</td>
+    <td style="padding-top:8px" class="neutral">${fv(s.own)}</td><td></td>
+    <td style="padding-top:8px" class="${s.ret>=0?'pos':'neg'}">${fp(s.ret)}</td>
+    <td style="padding-top:8px;font-size:11px" class="${s.ret>=0?'pos':'neg'}">${fpc(s.retp)} on own cash</td><td></td>
+  </tr>`;
+}
+
+// ── CHARTS ───────────────────────────────────────────────────────────────────
+const gc='rgba(255,255,255,0.05)', tf={family:'DM Mono',size:10}, tc='#6b7280';
+function dc(id){ if(CI[id]){ CI[id].destroy(); delete CI[id]; } }
+
+function buildValueChart(){
+  dc('cv');
+  CI['cv']=new Chart(document.getElementById('cv'),{
+    type:'line',
+    data:{
+      labels:H.map(h=>h[0]),
+      datasets:[
+        {label:'Portfolio value',  data:H.map(h=>h[1]),
+         borderColor:'#34d399', backgroundColor:'rgba(52,211,153,0.07)',
+         fill:true, tension:0.35, borderWidth:2, pointRadius:2, pointBackgroundColor:'#34d399'},
+        {label:'S&P 500 benchmark', data:H.map(h=>h[5]),
+         borderColor:'rgba(251,146,60,0.9)', backgroundColor:'transparent',
+         fill:false, tension:0.35, borderWidth:2, pointRadius:0, borderDash:[5,3]},
+        {label:'Own cash in', data:H.map(h=>hOwn(h)),
+         borderColor:'rgba(251,191,36,0.75)', backgroundColor:'transparent',
+         fill:false, tension:0.35, borderWidth:1.5, pointRadius:0, borderDash:[3,4]},
+        {label:'Cost base', data:H.map(h=>h[2]),
+         borderColor:'rgba(96,165,250,0.35)', backgroundColor:'transparent',
+         fill:false, tension:0.35, borderWidth:1, pointRadius:0, borderDash:[2,3]},
+      ]
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      interaction:{mode:'index', intersect:false},
+      plugins:{legend:{display:false}, tooltip:{callbacks:{label:ctx=>' '+ctx.dataset.label+': '+fv(ctx.raw)}}},
+      scales:{
+        x:{ticks:{font:tf,color:tc,autoSkip:true,maxTicksLimit:10}, grid:{color:gc}, border:{color:'transparent'}},
+        y:{ticks:{font:tf,color:tc,callback:v=>'$'+Math.round(v/1000)+'k'}, grid:{color:gc}, border:{color:'transparent'}}
+      }
+    }
+  });
+}
+
+function buildMonthlyChart(){
+  dc('cm');
+  // MoM P&L = H[n][3] - H[n-1][3] — matches your spreadsheet delta row
+  const mom    = H.slice(1).map((h,i)=>h[3]-H[i][3]);
+  const labels = H.slice(1).map(h=>h[0]);
+  CI['cm']=new Chart(document.getElementById('cm'),{
+    type:'bar',
+    data:{labels, datasets:[{
+      label:'P&L change', data:mom,
+      backgroundColor:mom.map(v=>v>=0?'rgba(52,211,153,0.7)':'rgba(248,113,113,0.7)'),
+      borderRadius:3, borderSkipped:false
+    }]},
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{legend:{display:false}, tooltip:{callbacks:{label:ctx=>fp(ctx.raw)}}},
+      scales:{
+        x:{ticks:{font:tf,color:tc,autoSkip:true,maxTicksLimit:8}, grid:{display:false}, border:{color:'transparent'}},
+        y:{ticks:{font:tf,color:tc,callback:v=>(v>=0?'+':'')+Math.round(v/1000)+'k'}, grid:{color:gc}, border:{color:'transparent'}}
+      }
+    }
+  });
+}
+
+function buildReturnChart(){
+  dc('cc');
+  const ownArr  = H.map(h=>hOwn(h));
+  const retArr  = H.map((h,i)=>h[1]-ownArr[i]);
+  const pctArr  = H.map((h,i)=>ownArr[i]>0?((h[1]-ownArr[i])/ownArr[i])*100:0);
+  const bRetArr = H.map((h,i)=>h[5]-ownArr[i]);
+  const bPctArr = H.map((h,i)=>ownArr[i]>0?((h[5]-ownArr[i])/ownArr[i])*100:0);
+  CI['cc']=new Chart(document.getElementById('cc'),{
+    type:'line',
+    data:{
+      labels:H.map(h=>h[0]),
+      datasets:[
+        {label:'Your return', data:retArr,
+         borderColor:'#a78bfa', backgroundColor:'rgba(167,139,250,0.07)',
+         fill:true, tension:0.35, borderWidth:2, pointRadius:2, pointBackgroundColor:'#a78bfa'},
+        {label:'S&P 500', data:bRetArr,
+         borderColor:'rgba(251,146,60,0.8)', backgroundColor:'transparent',
+         fill:false, tension:0.35, borderWidth:1.5, pointRadius:0, borderDash:[5,3]},
+      ]
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      interaction:{mode:'index', intersect:false},
+      plugins:{legend:{display:false}, tooltip:{callbacks:{
+        label:ctx=>ctx.datasetIndex===0
+          ?' Your return: '+fp(ctx.raw)+' ('+fpc(pctArr[ctx.dataIndex])+')'
+          :' S&P 500: '+fp(ctx.raw)+' ('+fpc(bPctArr[ctx.dataIndex])+')'
+      }}},
+      scales:{
+        x:{ticks:{font:tf,color:tc,autoSkip:true,maxTicksLimit:10}, grid:{color:gc}, border:{color:'transparent'}},
+        y:{ticks:{font:tf,color:tc,callback:v=>(v>=0?'+':'-')+'$'+Math.abs(Math.round(v/1000))+'k'}, grid:{color:gc}, border:{color:'transparent'}}
+      }
+    }
+  });
+}
+
+function buildAllocChart(cid,lid,compact){
+  dc(cid);
+  const tv=hlds.reduce((s,h)=>s+h.val,0);
+  const sorted=[...hlds].sort((a,b)=>b.val-a.val);
+  const cols=sorted.map(h=>COL[DEF.findIndex(d=>d.key===h.key)%COL.length]);
+  CI[cid]=new Chart(document.getElementById(cid),{
+    type:'doughnut',
+    data:{labels:sorted.map(h=>h.name),datasets:[{data:sorted.map(h=>h.val),backgroundColor:cols,borderWidth:2,borderColor:'#161a1f'}]},
+    options:{cutout:'68%',responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>ctx.label+': '+fv(ctx.raw)+' ('+((ctx.raw/tv)*100).toFixed(1)+'%)'}}}}
+  });
+  const le=document.getElementById(lid); if(!le) return; le.innerHTML='';
+  (compact?sorted.slice(0,6):sorted).forEach((h,i)=>{
+    const p=(h.val/tv*100).toFixed(1);
+    le.innerHTML+=`<div class="al-item">
+      <div class="al-dot" style="background:${cols[i]}"></div>
+      <span class="al-name">${h.name}</span><span class="al-pct">${p}%</span>
+      ${!compact?`<span class="al-amt">${fv(h.val)}</span>`:''}
+    </div>`;
+  });
+  if(compact&&sorted.length>6)
+    le.innerHTML+=`<div style="font-size:11px;color:var(--muted);padding-left:16px">+${sorted.length-6} more — see Allocation tab</div>`;
+}
+
+function buildAll(){
+  buildValueChart(); buildMonthlyChart(); buildReturnChart();
+  buildAllocChart('ca-home','leg-home',true);
+}
+
+// ── TABS ─────────────────────────────────────────────────────────────────────
+const TABS=['home','holdings','allocation','update'];
+function switchTab(name){
+  TABS.forEach(t=>document.getElementById('tab-'+t).style.display=t===name?'':'none');
+  document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===name));
+  if(name==='holdings')   renderHoldings();
+  if(name==='allocation') setTimeout(()=>buildAllocChart('ca-full','leg-full',false),30);
+  if(name==='update'){    renderEditForm(); const el=document.getElementById('cur-pl'); if(el) el.value=currentMonthPL; }
+}
+document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>switchTab(b.dataset.tab)));
+
+// ── EDIT FORM ────────────────────────────────────────────────────────────────
+function renderEditForm(){
+  const g=document.getElementById('egrid'); g.innerHTML='';
+  hlds.forEach(h=>{
+    g.innerHTML+=`<div class="erow">
+      <div class="eticker">${h.name}</div>
+      <div class="efield"><label>Value ($)</label>
+        <input type="number" id="ev-${h.key}" value="${h.val}" min="0" step="1"></div>
+      ${h.cost!==null?`<div class="efield"><label>Cost ($)</label>
+        <input type="number" id="ei-${h.key}" value="${h.cost}" min="0" step="1"></div>`:''}
+    </div>`;
+  });
+}
+
+function saveEdits(){
+  hlds.forEach(h=>{
+    const v=document.getElementById('ev-'+h.key);
+    const i=document.getElementById('ei-'+h.key);
+    if(v) h.val=parseFloat(v.value)||0;
+    if(i&&h.cost!==null) h.cost=parseFloat(i.value)||0;
+  });
+  const plEl=document.getElementById('cur-pl');
+  if(plEl){ currentMonthPL=parseFloat(plEl.value)||currentMonthPL; saveCurPL(currentMonthPL); }
+  saveH(); renderMetrics();
+  Object.keys(CI).forEach(k=>{CI[k].destroy();delete CI[k];});
+  setTimeout(buildAll,50);
+  document.getElementById('smsg').textContent='✓ Saved — '+new Date().toLocaleDateString('en-AU',{month:'short',year:'numeric'});
+  setTimeout(()=>switchTab('home'),700);
+}
+
+// ── INIT ─────────────────────────────────────────────────────────────────────
+renderMetrics();
+setTimeout(buildAll,80);
+</script>
+</body>
+</html>
