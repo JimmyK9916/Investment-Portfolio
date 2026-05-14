@@ -125,8 +125,8 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;fon
     <div class="metric-divider"><span>Breakdown</span></div>
     <div class="metric"><div class="mlabel">Cost base (open positions)</div><div class="mval neutral" id="m-cost">$88,526</div><div class="msub">incl. $9,598 recycled gains</div></div>
     <div class="metric"><div class="mlabel">Unrealised P&amp;L</div><div class="mval" id="m-ur">+$22,862</div><div class="msub">value vs cost base</div></div>
-    <div class="metric"><div class="mlabel">IVV.AX benchmark</div><div class="mval" id="m-bench" style="color:var(--orange)">$124,440</div><div class="msub" id="m-bench-sub" style="color:var(--orange)">+57.7% same cash timing</div></div>
-    <div class="metric"><div class="mlabel">vs IVV.AX</div><div class="mval neg" id="m-vs-bench">-$17,919</div><div class="msub" id="m-vs-bench-sub">-22.7pp behind benchmark</div></div>
+    <div class="metric"><div class="mlabel">IVV.AX benchmark</div><div class="mval" id="m-bench" style="color:var(--orange)">$115,449</div><div class="msub" id="m-bench-sub" style="color:var(--orange)">+46.3% same cash timing</div></div>
+    <div class="metric"><div class="mlabel">vs IVV.AX</div><div class="mval neg" id="m-vs-bench">-$8,928</div><div class="msub" id="m-vs-bench-sub">-11.3pp vs IVV.AX</div></div>
   </div>
 
   <div class="tabs">
@@ -149,7 +149,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;fon
           <span><span style="width:14px;height:0;border-top:2px dashed rgba(96,165,250,0.4);display:inline-block"></span>Cost base</span>
         </div>
         <div class="bench-box">
-          <strong>vs IVV.AX (AUD):</strong> Same cash invested into IVV at the same times would be worth <strong id="bb-bench">$124,440</strong> — a return of <strong style="color:var(--orange)" id="bb-benchret">+59.1%</strong> vs your portfolio's <strong class="pos" id="bb-portret">+33.1%</strong>. You're <strong id="bb-diff" class="neg">$20,027 behind</strong> the benchmark.
+          <strong>vs IVV.AX (AUD):</strong> Same cash invested into IVV at the same times would be worth <strong id="bb-bench">$115,449</strong> — a return of <strong style="color:var(--orange)" id="bb-benchret">+59.1%</strong> vs your portfolio's <strong class="pos" id="bb-portret">+33.1%</strong>. You're <strong id="bb-diff" class="neg">$20,027 behind</strong> the benchmark.
         </div>
       </div>
       <div class="card">
@@ -248,45 +248,45 @@ const TP = 9598;
 
 const H = [
   // label       val      cost     pl       tp     ivvBench  ivvPrice
-  ['Dec 22',   26602,   34895,  -8544,  false,   34895,   34.17],
-  ['Jan 23',   27359,   36016,  -8904,  false,   35005,   33.18],
-  ['Feb 23',   31909,   37126,  -5464,  false,   39101,   36.01],
-  ['Mar 23',   33382,   38593,  -5474,  false,   39666,   35.18],
-  ['Apr 23',   35435,   39427,  -4233,  false,   42654,   37.09],
-  ['May 23',   36110,   39827,  -3954,  false,   43836,   37.77],
-  ['Jun 23',   42804,   41125,   1433,  false,   46480,   38.93],
-  ['Jul 23',   42320,   43227,  -1147,  false,   49967,   40.09],
-  ['Aug 23',   43668,   46028,  -2629,  false,   53404,   40.60],
-  ['Sep 23',   45398,   46228,  -1096,  false,   54104,   40.98],
-  ['Oct 23',   43535,   46629,  -3334,  false,   53000,   39.84],
-  ['Nov 23',   47243,   49129,  -2124,  false,   55899,   40.14],
-  ['Dec 23',   50792,   49529,   1047,  false,   57301,   40.86],
-  ['Jan 24',   54544,   49627,   4700,  false,   61018,   43.44],
-  ['Feb 24',   54285,   49628,   4432,  false,   64137,   45.66],
-  ['Mar 24',   56518,   49628,   6665,  false,   66160,   47.10],
-  ['Apr 24',   57872,   51630,   6028,  false,   67909,   46.92],
-  ['May 24',   54035,   51629,   2216,  false,   67576,   46.69],
-  ['Jun 24',   54520,   51629,   2697,  false,   69848,   48.26],
-  ['Jul 24',   55871,   51629,   4036,  false,   72859,   50.34],
-  ['Aug 24',   54260,   54129,    -47,  false,   72059,   48.06],
-  ['Sep 24',   55962,   54607,   1165,  false,   73092,   48.43],
-  ['Oct 24',   58128,   55557,   2390,  false,   79626,   52.13],
-  ['Dec 24',   74756,   57468,  17114,  false,   89586,   57.40],
-  ['Jan 25',   76115,   59882,  16061,  false,   91392,   57.01],
-  ['Feb 25',   79558,   60409,  18977,  false,   92095,   57.12],
-  ['Mar 25',   73869,   61338,  12357,  false,   87607,   53.76],
-  ['Apr 25',   69335,   63705,   5471,  false,   83569,   49.83],
-  ['May 25',   73037,   65672,   7221,  false,   91859,   53.60],
-  ['Jun 25',   79820,   66633,  13027,  false,   94242,   54.43],
-  ['Sep 25',   87295,   66634,  20481,  false,   98139,   56.68],
-  ['Oct 25',  101036,   76633,  24226,  false,  114164,   60.16],
-  ['Nov 25',  107509,   78112,  29236,  false,  119647,   62.27],
-  ['Dec 25',  103852,   78032,  25642,  false,  125853,   65.50],
-  ['Jan 26',  103522,   78033,  25324,  false,  125527,   65.33],
-  ['Feb 26',  102589,   85284,  26727,  true,   123510,   64.28],
-  ['Mar 26',  100915,   86706,  21110,  true,   122549,   63.04],
-  ['Apr 26',   92928,   86703,  12802,  true,   123541,   63.55],
-  ['May 26',  106521,   88526,  22862,  true,   124440,   63.10],
+  ['Dec 22',   26602,   34895,  -8544,  false, 30000,   34.17],
+  ['Jan 23',   27359,   36016,  -8904,  false, 30252,   33.18],
+  ['Feb 23',   31909,   37126,  -5464,  false, 33942,   36.01],
+  ['Mar 23',   33382,   38593,  -5474,  false, 34627,   35.18],
+  ['Apr 23',   35435,   39427,  -4233,  false, 37341,   37.09],
+  ['May 23',   36110,   39827,  -3954,  false, 38425,   37.77],
+  ['Jun 23',   42804,   41125,   1433,  false, 40903,   38.93],
+  ['Jul 23',   42320,   43227,  -1147,  false, 44224,   40.09],
+  ['Aug 23',   43668,   46028,  -2629,  false, 47588,   40.60],
+  ['Sep 23',   45398,   46228,  -1096,  false, 48233,   40.98],
+  ['Oct 23',   43535,   46629,  -3334,  false, 47292,   39.84],
+  ['Nov 23',   47243,   49129,  -2124,  false, 50149,   40.14],
+  ['Dec 23',   50792,   49529,   1047,  false, 51448,   40.86],
+  ['Jan 24',   54544,   49627,   4700,  false, 54795,   43.44],
+  ['Feb 24',   54285,   49628,   4432,  false, 57596,   45.66],
+  ['Mar 24',   56518,   49628,   6665,  false, 59412,   47.10],
+  ['Apr 24',   57872,   51630,   6028,  false, 61187,   46.92],
+  ['May 24',   54035,   51629,   2216,  false, 60887,   46.69],
+  ['Jun 24',   54520,   51629,   2697,  false, 62935,   48.26],
+  ['Jul 24',   55871,   51629,   4036,  false, 65647,   50.34],
+  ['Aug 24',   54260,   54129,    -47,  false, 65174,   48.06],
+  ['Sep 24',   55962,   54607,   1165,  false, 66154,   48.43],
+  ['Oct 24',   58128,   55557,   2390,  false, 72158,   52.13],
+  ['Dec 24',   74756,   57468,  17114,  false, 81363,   57.40],
+  ['Jan 25',   76115,   59882,  16061,  false, 83225,   57.01],
+  ['Feb 25',   79558,   60409,  18977,  false, 83912,   57.12],
+  ['Mar 25',   73869,   61338,  12357,  false, 79905,   53.76],
+  ['Apr 25',   69335,   63705,   5471,  false, 76431,   49.83],
+  ['May 25',   73037,   65672,   7221,  false, 84180,   53.60],
+  ['Jun 25',   79820,   66633,  13027,  false, 86445,   54.43],
+  ['Sep 25',   87295,   66634,  20481,  false, 90019,   56.68],
+  ['Oct 25',  101036,   76633,  24226,  false, 105545,   60.16],
+  ['Nov 25',  107509,   78112,  29236,  false, 110726,   62.27],
+  ['Dec 25',  103852,   78032,  25642,  false, 116470,   65.50],
+  ['Jan 26',  103522,   78033,  25324,  false, 116168,   65.33],
+  ['Feb 26',  102589,   85284,  26727,  true, 114301,   64.28],
+  ['Mar 26',  100915,   86706,  21110,  true, 113518,   63.04],
+  ['Apr 26',   92928,   86703,  12802,  true, 114437,   63.55],
+  ['May 26',  106521,   88526,  22862,  true, 115449,   63.10],
 ];
 
 // Total IVV units held at end of history (used as base for future months)
@@ -301,7 +301,7 @@ function computeIvvUnits(){
   });
   return units;
 }
-const BASE_IVV_UNITS = 1972.1006; // precomputed from spreadsheet May 26 figures
+const BASE_IVV_UNITS = 1829.6255; // $30k start Dec 22 + injections // precomputed from spreadsheet May 26 figures
 
 // ── DEFAULT HOLDINGS (May 2026) ──────────────────────────────────────────────
 const DEF = [
