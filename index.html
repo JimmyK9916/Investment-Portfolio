@@ -61,6 +61,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;fon
 .bf{height:3px;border-radius:2px}
 .tp-row td{color:var(--muted);font-size:12px}
 .tot-row td{font-weight:600;font-size:13px;border-top:1px solid var(--border2) !important;padding-top:14px !important}
+.htable th:hover{color:var(--text)}
 
 .al-layout{display:flex;gap:28px;align-items:flex-start;flex-wrap:wrap}
 .al-legend{flex:1;min-width:180px;display:flex;flex-direction:column;gap:8px}
@@ -184,7 +185,12 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;fon
       <div style="overflow-x:auto">
         <table class="htable">
           <thead><tr>
-            <th>Asset</th><th>Value</th><th>Cost base</th><th>P&amp;L $</th><th>P&amp;L %</th><th>Alloc</th>
+            <th onclick="sortHoldings('name')" style="cursor:pointer;user-select:none">Asset <span id="sort-name" style="color:var(--muted);font-size:9px"></span></th>
+            <th onclick="sortHoldings('val')" style="cursor:pointer;user-select:none;text-align:right">Value <span id="sort-val" style="color:var(--muted);font-size:9px"></span></th>
+            <th onclick="sortHoldings('cost')" style="cursor:pointer;user-select:none;text-align:right">Cost base <span id="sort-cost" style="color:var(--muted);font-size:9px"></span></th>
+            <th onclick="sortHoldings('pl')" style="cursor:pointer;user-select:none;text-align:right">P&amp;L $ <span id="sort-pl" style="color:var(--muted);font-size:9px"></span></th>
+            <th onclick="sortHoldings('plpct')" style="cursor:pointer;user-select:none;text-align:right">P&amp;L % <span id="sort-plpct" style="color:var(--muted);font-size:9px"></span></th>
+            <th onclick="sortHoldings('alloc')" style="cursor:pointer;user-select:none;text-align:right">Alloc <span id="sort-alloc" style="color:var(--muted);font-size:9px"></span></th>
           </tr></thead>
           <tbody id="hbody"></tbody>
         </table>
@@ -329,6 +335,7 @@ const COL = ['#34d399','#60a5fa','#f472b6','#fbbf24','#a78bfa','#fb923c',
 
 // ── STATE ────────────────────────────────────────────────────────────────────
 let hlds = loadH(), CI = {};
+let sortKey = 'val', sortDir = 1; // default: value descending
 let currentMonthPL  = loadNum('inv_curpl',  H[H.length-1][3]);
 let currentIvvPrice = loadNum('inv_ivvprice', H[H.length-1][6]);
 // IVV units accumulate — whenever new cash added, more units bought
@@ -422,7 +429,22 @@ function renderMetrics(){
 // ── RENDER HOLDINGS ──────────────────────────────────────────────────────────
 function renderHoldings(){
   const s=stats(), tv=s.tv;
-  const sorted=[...hlds].sort((a,b)=>b.val-a.val);
+  const tv0=hlds.reduce((s,h)=>s+h.val,0);
+  const sorted=[...hlds].sort((a,b)=>{
+    let av,bv;
+    if(sortKey==='name'){ return sortDir*(a.name<b.name?-1:a.name>b.name?1:0); }
+    if(sortKey==='val')   { av=a.val;   bv=b.val; }
+    else if(sortKey==='cost')  { av=a.cost||0; bv=b.cost||0; }
+    else if(sortKey==='pl')    { av=a.cost?a.val-a.cost:-Infinity; bv=b.cost?b.val-b.cost:-Infinity; }
+    else if(sortKey==='plpct') { av=(a.cost&&a.cost>0)?(a.val-a.cost)/a.cost:-Infinity; bv=(b.cost&&b.cost>0)?(b.val-b.cost)/b.cost:-Infinity; }
+    else if(sortKey==='alloc') { av=a.val/tv0; bv=b.val/tv0; }
+    else { av=a.val; bv=b.val; }
+    return sortDir*(bv-av);
+  });
+  ['name','val','cost','pl','plpct','alloc'].forEach(k=>{
+    const el=document.getElementById('sort-'+k);
+    if(el) el.textContent=k===sortKey?(sortDir===1?'▼':'▲'):'';
+  });
   const tb=document.getElementById('hbody'); tb.innerHTML='';
   sorted.forEach(h=>{
     const ci=DEF.findIndex(d=>d.key===h.key);
@@ -665,6 +687,17 @@ function saveEdits(){
   setTimeout(buildAll,50);
   document.getElementById('smsg').textContent='✓ Saved — '+new Date().toLocaleDateString('en-AU',{month:'short',year:'numeric'});
   setTimeout(()=>switchTab('home'),700);
+}
+
+// ── SORT ─────────────────────────────────────────────────────────────────────
+function sortHoldings(key){
+  if(sortKey === key){
+    sortDir *= -1; // toggle direction
+  } else {
+    sortKey = key;
+    sortDir = 1; // first click always descending (high→low) for numbers, A→Z for names
+  }
+  renderHoldings();
 }
 
 // ── INIT ─────────────────────────────────────────────────────────────────────
