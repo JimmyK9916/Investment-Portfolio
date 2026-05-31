@@ -110,24 +110,24 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;fon
   <div class="hdr-top">
     <div>
       <div class="eyebrow">Portfolio tracker</div>
-      <div class="total-val"><sup>$</sup><span id="hdr-total">106,521</span></div>
+      <div class="total-val"><sup>$</sup><span id="hdr-total">108,777</span></div>
     </div>
     <div class="hdr-right">
-      <div class="updated">Last updated: April 2026</div>
-      <div id="mpill" class="pill pos">▲ +$10,060 P&amp;L vs Mar 26</div>
+      <div class="updated">Last updated: May 2026</div>
+      <div id="mpill" class="pill pos">▲ +$2,273 P&amp;L vs Apr 26</div>
     </div>
   </div>
 
   <div class="metrics">
     <div class="metric hl"><div class="mlabel">Own cash invested</div><div class="mval" id="m-own">$83,427</div><div class="msub">your money, out of pocket</div></div>
-    <div class="metric hl"><div class="mlabel">Current value</div><div class="mval" id="m-val">$106,521</div><div class="msub">all open positions</div></div>
-    <div class="metric hl"><div class="mlabel">Total return</div><div class="mval pos" id="m-ret">+$22,862</div><div class="msub pos" id="m-retp">+27.4% on own cash</div></div>
-    <div class="metric hl"><div class="mlabel">P&amp;L this month</div><div class="mval pos" id="m-month">+$10,060</div><div class="msub" id="m-monthsub">vs Mar 2026</div></div>
+    <div class="metric hl"><div class="mlabel">Current value</div><div class="mval" id="m-val">$108,777</div><div class="msub">all open positions</div></div>
+    <div class="metric hl"><div class="mlabel">Total return</div><div class="mval pos" id="m-ret">+$25,135</div><div class="msub pos" id="m-retp">+30.1% on own cash</div></div>
+    <div class="metric hl"><div class="mlabel">P&amp;L this month</div><div class="mval pos" id="m-month">+$2,273</div><div class="msub" id="m-monthsub">vs Apr 2026</div></div>
     <div class="metric-divider"><span>Breakdown</span></div>
     <div class="metric"><div class="mlabel">Cost base (open positions)</div><div class="mval neutral" id="m-cost">$93,025</div><div class="msub">incl. $9,598 recycled gains</div></div>
-    <div class="metric"><div class="mlabel">Unrealised P&amp;L</div><div class="mval" id="m-ur">+$13,496</div><div class="msub">value vs cost base</div></div>
-    <div class="metric"><div class="mlabel">IVV.AX benchmark</div><div class="mval" id="m-bench" style="color:var(--orange)">$115,449</div><div class="msub" id="m-bench-sub" style="color:var(--orange)">+38.4% same cash timing</div></div>
-    <div class="metric"><div class="mlabel">vs IVV.AX</div><div class="mval neg" id="m-vs-bench">-$8,928</div><div class="msub" id="m-vs-bench-sub">-11.0pp vs IVV.AX</div></div>
+    <div class="metric"><div class="mlabel">Unrealised P&amp;L</div><div class="mval" id="m-ur">+$15,752</div><div class="msub">value vs cost base</div></div>
+    <div class="metric"><div class="mlabel">IVV.AX benchmark</div><div class="mval" id="m-bench" style="color:var(--orange)">$133,360</div><div class="msub" id="m-bench-sub" style="color:var(--orange)">+59.8% same cash timing</div></div>
+    <div class="metric"><div class="mlabel">vs IVV.AX</div><div class="mval neg" id="m-vs-bench">-$24,583</div><div class="msub" id="m-vs-bench-sub">-29.7pp vs IVV.AX</div></div>
   </div>
 
   <div class="tabs">
@@ -225,7 +225,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;fon
       </div>
     </div>
     <div class="card" style="margin-top:16px">
-      <div class="ctitle">Latest month (<span id="perf-latest-label">Apr 26</span>) — pp change, best to worst</div>
+      <div class="ctitle">Latest month (<span id="perf-latest-label">May 26</span>) — pp change, best to worst</div>
       <div style="position:relative;width:100%;height:260px"><canvas id="perf-bar" role="img" aria-label="Latest month performance by holding">Latest month performance.</canvas></div>
     </div>
   </div>
@@ -257,6 +257,18 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;fon
         <button class="btn btn-p" onclick="saveEdits()">Save &amp; refresh</button>
         <button class="btn btn-g" onclick="switchTab('home')">Cancel</button>
         <span class="smsg" id="smsg"></span>
+      </div>
+      <div style="margin-top:24px;padding-top:20px;border-top:1px solid var(--border)">
+        <div class="ctitle" style="margin-bottom:10px">Backup &amp; restore</div>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:14px;line-height:1.5;max-width:620px">
+          Your data lives in this browser only. Click <strong style="color:var(--text)">Export backup</strong> to download a copy of everything you've entered — keep it somewhere safe. If you switch devices, clear your browser, or upload a new version of this file, use <strong style="color:var(--text)">Import backup</strong> to restore it.
+        </div>
+        <div class="eactions" style="margin-top:0">
+          <button class="btn btn-g" onclick="exportBackup()">⬇ Export backup</button>
+          <button class="btn btn-g" onclick="document.getElementById('import-file').click()">⬆ Import backup</button>
+          <input type="file" id="import-file" accept="application/json" style="display:none" onchange="importBackup(event)">
+          <span class="smsg" id="backup-msg"></span>
+        </div>
       </div>
     </div>
   </div>
@@ -313,8 +325,24 @@ const H = [
   ['Jan 26',  102589,   85284,  26727,  true, 114301,   64.28],
   ['Feb 26',  100915,   86706,  21110,  true, 113518,   63.04],
   ['Mar 26',   92928,   86703,  12802,  true, 114437,   63.55],
-  ['Apr 26',  106521,   88526,  22862,  true, 115449,   63.10],
+  ['Apr 26',  106521,   93025,  22862,  true, 115449,   63.10],
+  ['May 26', 108777,   93025,  25135,  true, 133360,   70.43],
 ];
+
+// Merge any months you've added via the Update tab (stored in your browser).
+// Each saved month is appended to the history so all charts include it.
+(function mergeSavedMonths(){
+  try {
+    const saved = localStorage.getItem('inv_addedmonths');
+    if(saved){
+      const extra = JSON.parse(saved);   // array of [label,val,cost,pl,tp,bench,ivvprice]
+      extra.forEach(row => {
+        // avoid duplicates by label
+        if(!H.some(h => h[0] === row[0])) H.push(row);
+      });
+    }
+  } catch(e){}
+})();
 
 // Total IVV units held at end of history (used as base for future months)
 // Recompute from injection schedule
@@ -328,26 +356,26 @@ function computeIvvUnits(){
   });
   return units;
 }
-const BASE_IVV_UNITS = 1829.6255; // $30k start Dec 22 + injections // precomputed from spreadsheet May 26 figures
+const BASE_IVV_UNITS = 1893.5046; // $30k start + injections through May 26 // precomputed from spreadsheet May 26 figures
 
 // ── DEFAULT HOLDINGS (May 2026) ──────────────────────────────────────────────
 const DEF = [
-  {key:'BHP',    name:'BHP',        val:2143,  cost:2017 },
-  {key:'NVA',    name:'NVA',        val:1838,  cost:2020 },
-  {key:'RIO',    name:'RIO',        val:2580,  cost:1925 },
-  {key:'NAS100', name:'NAS100',     val:38142, cost:23889},
-  {key:'MSFT',   name:'MSFT',       val:2817,  cost:1981 },
-  {key:'META',   name:'META',       val:3381,  cost:1988 },
-  {key:'GOOGL',  name:'GOOGL',      val:10632, cost:3747 },
-  {key:'ACDC',   name:'ACDC',       val:5633,  cost:4920 },
-  {key:'CRYPTO', name:'Crypto',     val:2966,  cost:11500},
-  {key:'WDS',    name:'WDS',        val:232,   cost:null },
-  {key:'SCAPS',  name:'Small caps', val:10507, cost:11400},
-  {key:'NIC',    name:'NIC',        val:2797,  cost:2517 },
-  {key:'URNM',   name:'URNM',       val:4581,  cost:5527 },
-  {key:'WIRE',   name:'WIRE',       val:5286,  cost:5519 },
-  {key:'USETFS', name:'US ETFs',    val:8454,  cost:9576 },
-  {key:'SLVM',   name:'SLVM',       val:4532,  cost:4499 },
+  {key:'BHP',    name:'BHP',        val:2430,  cost:2017 },
+  {key:'NVA',    name:'NVA',        val:2119,  cost:2020 },
+  {key:'RIO',    name:'RIO',        val:2784,  cost:1925 },
+  {key:'NAS100', name:'NAS100',     val:42123, cost:23889},
+  {key:'MSFT',   name:'MSFT',       val:3112,  cost:1981 },
+  {key:'META',   name:'META',       val:3498,  cost:1988 },
+  {key:'GOOGL',  name:'GOOGL',      val:10517, cost:3747 },
+  {key:'ACDC',   name:'ACDC',       val:5714,  cost:4920 },
+  {key:'CRYPTO', name:'Crypto',     val:2239,  cost:11500},
+  {key:'WDS',    name:'WDS',        val:215,   cost:null },
+  {key:'SCAPS',  name:'Small caps', val:9987,  cost:11400},
+  {key:'NIC',    name:'NIC',        val:2784,  cost:2517 },
+  {key:'URNM',   name:'URNM',       val:4351,  cost:5527 },
+  {key:'WIRE',   name:'WIRE',       val:5172,  cost:5519 },
+  {key:'USETFS', name:'US ETFs',    val:7663,  cost:9576 },
+  {key:'SLVM',   name:'SLVM',       val:4069,  cost:4499 },
 ];
 
 const COL = ['#34d399','#60a5fa','#f472b6','#fbbf24','#a78bfa','#fb923c',
@@ -363,11 +391,11 @@ let prevMonthPL = loadNum('inv_prevpl', H[H.length-2][3]);
 // Per-stock snapshot of last month's P&L {key: pl}. Captured each time you Save.
 // Used to show this-month-vs-last-month gain/loss per holding on the Stock performance tab.
 let prevStockPL = loadObj('inv_prevstockpl', null);
-let prevStockLabel = loadStr('inv_prevstocklabel', 'Mar 26');
-let curStockLabel  = loadStr('inv_curstocklabel', 'Apr 26');
-// Seed default previous-month per-stock P&L + cost (Mar 26) if none stored yet
+let prevStockLabel = loadStr('inv_prevstocklabel', 'Apr 26');
+let curStockLabel  = loadStr('inv_curstocklabel', 'May 26');
+// Seed default previous-month per-stock P&L + cost (Apr 26) if none stored yet
 if(prevStockPL === null){
-  prevStockPL = {"BHP": {"pl": -23, "cost": 2017}, "NVA": {"pl": -125, "cost": 2019}, "RIO": {"pl": 499, "cost": 1925}, "NAS100": {"pl": 10421, "cost": 23889}, "MSFT": {"pl": 669, "cost": 1980}, "META": {"pl": 1336, "cost": 1988}, "GOOGL": {"pl": 4786, "cost": 3747}, "ACDC": {"pl": -229, "cost": 4920}, "CRYPTO": {"pl": -8950, "cost": 11500}, "SCAPS": {"pl": -1452, "cost": 11400}, "NIC": {"pl": -101, "cost": 2517}, "URNM": {"pl": -831, "cost": 5025}, "WIRE": {"pl": -921, "cost": 5015}, "USETFS": {"pl": -1674, "cost": 8761}, "SLVM": {"pl": -201, "cost": 1819}};
+  prevStockPL = {"BHP": {"pl": 126, "cost": 2017}, "NVA": {"pl": -182, "cost": 2020}, "RIO": {"pl": 655, "cost": 1925}, "NAS100": {"pl": 14253, "cost": 23889}, "MSFT": {"pl": 836, "cost": 1981}, "META": {"pl": 1393, "cost": 1988}, "GOOGL": {"pl": 6885, "cost": 3747}, "ACDC": {"pl": 713, "cost": 4920}, "CRYPTO": {"pl": -8534, "cost": 11500}, "SCAPS": {"pl": -893, "cost": 11400}, "NIC": {"pl": 280, "cost": 2517}, "URNM": {"pl": -946, "cost": 5527}, "WIRE": {"pl": -233, "cost": 5519}, "USETFS": {"pl": -1122, "cost": 9576}, "SLVM": {"pl": 33, "cost": 4499}};
 }
 let currentIvvPrice = loadNum('inv_ivvprice', H[H.length-1][6]);
 // IVV units accumulate — whenever new cash added, more units bought
@@ -392,14 +420,16 @@ function stats(){
   const own  = cost - TP;
   const ur   = tv - cost;
 
-  // Total P&L (matches spreadsheet): sum of each holding's (value - cost),
-  // counting only holdings that have a cost base (excludes WDS), plus realised TPs.
+  // Total P&L (matches spreadsheet): sum of each holding's (value - cost) + realised TPs
   const holdingsPL = wc.reduce((s,h) => s + (h.val - h.cost), 0);
   const currentPL  = holdingsPL + TP;
-  const ret        = currentPL;                    // total return = total P&L
+  const ret        = currentPL;
   const retp       = own>0?(ret/own)*100:0;
-  const month      = currentPL - prevMonthPL;
-  const prevLabel  = loadStr('inv_prevlabel', H[H.length-2][0]);
+  // MoM delta: latest month's P&L vs the previous month's P&L, both from history.
+  // The latest H entry mirrors the live holdings (kept in sync on save).
+  const prevPL     = H.length>=2 ? H[H.length-2][3] : prevMonthPL;
+  const month      = currentPL - prevPL;
+  const prevLabel  = H.length>=2 ? H[H.length-2][0] : loadStr('inv_prevlabel', 'prev');
 
   // Live benchmark = (BASE_IVV_UNITS + any new units from extra injections) × current IVV price
   const totalUnits = BASE_IVV_UNITS + ivvUnitsExtra;
@@ -525,20 +555,14 @@ const gc='rgba(255,255,255,0.05)', tf={family:'DM Mono',size:10}, tc='#6b7280';
 function dc(id){ if(CI[id]){ CI[id].destroy(); delete CI[id]; } }
 
 function liveH(){
-  // Append a synthetic "current" point if IVV price has been updated beyond history
-  const s = stats();
+  // The history array already includes the latest month (kept in sync on save),
+  // so charts read directly from H. The current/live month is the last H entry.
   return {
-    labels: [...H.map(h=>h[0])],
-    vals:   [...H.map(h=>h[1])],
-    costs:  [...H.map(h=>h[2])],
-    owns:   [...H.map(h=>h[4]?h[2]-TP:h[2])],
-    bench:  [...H.map(h=>h[5]), s.benchVal].slice(0, H.length), // replace last point with live
-    ivvBench: H.map((_,i)=>{
-      // rebuild live benchmark line using stored units
-      const units = BASE_IVV_UNITS + ivvUnitsExtra;
-      if(i === H.length-1) return Math.round(units * currentIvvPrice);
-      return H[i][5];
-    })
+    labels:   H.map(h=>h[0]),
+    vals:     H.map(h=>h[1]),
+    costs:    H.map(h=>h[2]),
+    owns:     H.map(h=>h[4]?h[2]-TP:h[2]),
+    ivvBench: H.map(h=>h[5]),
   };
 }
 
@@ -776,15 +800,15 @@ function populateUpdateExtras(){
 }
 
 function saveEdits(){
-  // Capture the P&L from BEFORE this update — it becomes "last month" for the delta.
-  const beforeStats = stats();
-  const beforeWc = hlds.filter(h=>h.cost!==null);
-  const beforePL = beforeWc.reduce((s,h)=>s+(h.val-h.cost),0) + TP;
-  // Capture per-stock P&L + cost before the update (becomes "last month" on the perf tab)
+  // Snapshot per-stock P&L + cost BEFORE the update (becomes "last month" on the perf tab)
   const beforeStockPL = {};
   hlds.forEach(h => { if(h.cost!==null) beforeStockPL[h.key] = { pl: h.val - h.cost, cost: h.cost }; });
+  // P&L showing before this update = previous month's total P&L (for the home delta)
+  const beforeWc = hlds.filter(h=>h.cost!==null);
+  const beforePL = beforeWc.reduce((s,h)=>s+(h.val-h.cost),0) + TP;
+  const beforeOwn = beforeWc.reduce((s,h)=>s+(h.cost||0),0) - TP;
 
-  // Read updated holdings
+  // Read the new values entered
   hlds.forEach(h=>{
     const v=document.getElementById('ev-'+h.key);
     const i=document.getElementById('ei-'+h.key);
@@ -793,41 +817,67 @@ function saveEdits(){
   });
   saveH();
 
-  // The P&L that was showing before this save becomes the new "previous month" baseline.
+  // New month figures
+  const wc=hlds.filter(h=>h.cost!==null);
+  const newVal  = hlds.reduce((s,h)=>s+h.val,0);
+  const newCost = wc.reduce((s,h)=>s+(h.cost||0),0);
+  const newPL   = wc.reduce((s,h)=>s+(h.val-h.cost),0) + TP;  // total P&L incl TPs
+  const newOwn  = newCost - TP;
+
+  // IVV benchmark — buy more units if own cash increased, then value at the new price
+  const ivvEl=document.getElementById('cur-ivv');
+  let newIvvPrice = currentIvvPrice;
+  if(ivvEl){
+    newIvvPrice = parseFloat(ivvEl.value)||currentIvvPrice;
+    const injection = newOwn - beforeOwn;
+    if(injection>0) ivvUnitsExtra += injection/newIvvPrice;
+    saveNum('inv_ivvunits_extra', ivvUnitsExtra);
+    currentIvvPrice = newIvvPrice;
+    saveNum('inv_ivvprice', currentIvvPrice);
+  }
+  const newBench = Math.round((BASE_IVV_UNITS + ivvUnitsExtra) * newIvvPrice);
+
+  // Determine the new month's label
+  const lblEl=document.getElementById('cur-monthlabel');
+  const newLabel = (lblEl && lblEl.value.trim()) ? lblEl.value.trim() : 'New';
+
+  // Append the new month to history (H) and persist it so charts include it
+  const newRow = [newLabel, newVal, newCost, newPL, true, newBench, newIvvPrice];
+  // If the last history row already has this label, replace it; else append
+  if(H.length && H[H.length-1][0] === newLabel){
+    H[H.length-1] = newRow;
+  } else {
+    H.push(newRow);
+  }
+  // Persist added months (everything beyond the original baked-in history)
+  const added = [];
+  // The original history ended at 'Apr 26'. Capture all rows from the one after it.
+  let pastBaseline = false;
+  H.forEach(h => {
+    if(pastBaseline) added.push(h);
+    if(h[0] === 'May 26') pastBaseline = true;
+  });
+  saveObj('inv_addedmonths', added);
+
+  // Roll the home-page delta baseline: previous month = the P&L before this update
   prevMonthPL = beforePL;
   saveNum('inv_prevpl', prevMonthPL);
-  // Roll the per-stock comparison: what was "current" becomes "previous"
+
+  // Roll the per-stock comparison + labels
   prevStockPL = beforeStockPL;
   saveObj('inv_prevstockpl', prevStockPL);
-  // Roll the month labels. The label you enter is the NEW current month.
-  const lblEl=document.getElementById('cur-monthlabel');
   if(lblEl && lblEl.value.trim()){
-    prevStockLabel = curStockLabel;       // old current becomes previous
-    curStockLabel  = lblEl.value.trim();  // entered label is new current
+    prevStockLabel = curStockLabel;
+    curStockLabel  = newLabel;
     saveStr('inv_prevstocklabel', prevStockLabel);
     saveStr('inv_curstocklabel',  curStockLabel);
     saveStr('inv_prevlabel', prevStockLabel);
   }
 
-  // IVV benchmark — buy more units if own cash increased
-  const ivvEl=document.getElementById('cur-ivv');
-  if(ivvEl){
-    const newIvvPrice=parseFloat(ivvEl.value)||currentIvvPrice;
-    const wc=hlds.filter(h=>h.cost!==null);
-    const newCost=wc.reduce((s,h)=>s+(h.cost||0),0);
-    const newOwn=newCost-TP;
-    const prevOwn=(beforeStats.cost)-TP;
-    const injection=newOwn-prevOwn;
-    if(injection>0) ivvUnitsExtra+=injection/newIvvPrice;
-    saveNum('inv_ivvunits_extra',ivvUnitsExtra);
-    currentIvvPrice=newIvvPrice;
-    saveNum('inv_ivvprice',currentIvvPrice);
-  }
-
   renderMetrics();
   Object.keys(CI).forEach(k=>{CI[k].destroy();delete CI[k];});
   setTimeout(buildAll,50);
-  document.getElementById('smsg').textContent='✓ Saved — '+new Date().toLocaleDateString('en-AU',{month:'short',year:'numeric'});
+  document.getElementById('smsg').textContent='✓ Saved '+newLabel;
   setTimeout(()=>switchTab('home'),700);
 }
 
@@ -840,6 +890,53 @@ function sortHoldings(key){
     sortDir = 1; // first click always descending (high→low) for numbers, A→Z for names
   }
   renderHoldings();
+}
+
+// ── BACKUP / RESTORE ─────────────────────────────────────────────────────────
+function exportBackup(){
+  const backup = {
+    version: 1,
+    exportedAt: new Date().toISOString(),
+    holdings: hlds,
+    addedMonths: loadObj('inv_addedmonths', []),
+    prevMonthPL, prevStockPL, prevStockLabel, curStockLabel,
+    currentIvvPrice, ivvUnitsExtra
+  };
+  const blob = new Blob([JSON.stringify(backup, null, 2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'portfolio-backup-' + new Date().toISOString().slice(0,10) + '.json';
+  a.click();
+  URL.revokeObjectURL(url);
+  const msg = document.getElementById('backup-msg');
+  if(msg) msg.textContent = '✓ Backup downloaded';
+}
+
+function importBackup(event){
+  const file = event.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e){
+    try {
+      const b = JSON.parse(e.target.result);
+      if(b.holdings){ hlds = b.holdings; saveH(); }
+      if(b.addedMonths){ saveObj('inv_addedmonths', b.addedMonths); }
+      if(b.prevMonthPL!==undefined){ prevMonthPL=b.prevMonthPL; saveNum('inv_prevpl',prevMonthPL); }
+      if(b.prevStockPL){ prevStockPL=b.prevStockPL; saveObj('inv_prevstockpl',prevStockPL); }
+      if(b.prevStockLabel){ prevStockLabel=b.prevStockLabel; saveStr('inv_prevstocklabel',prevStockLabel); }
+      if(b.curStockLabel){ curStockLabel=b.curStockLabel; saveStr('inv_curstocklabel',curStockLabel); }
+      if(b.currentIvvPrice!==undefined){ currentIvvPrice=b.currentIvvPrice; saveNum('inv_ivvprice',currentIvvPrice); }
+      if(b.ivvUnitsExtra!==undefined){ ivvUnitsExtra=b.ivvUnitsExtra; saveNum('inv_ivvunits_extra',ivvUnitsExtra); }
+      const msg = document.getElementById('backup-msg');
+      if(msg) msg.textContent = '✓ Restored — reloading…';
+      setTimeout(()=>location.reload(), 800);
+    } catch(err){
+      const msg = document.getElementById('backup-msg');
+      if(msg) msg.textContent = '✗ Could not read that file';
+    }
+  };
+  reader.readAsText(file);
 }
 
 // ── INIT ─────────────────────────────────────────────────────────────────────
