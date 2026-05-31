@@ -113,27 +113,28 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;fon
       <div class="total-val"><sup>$</sup><span id="hdr-total">106,521</span></div>
     </div>
     <div class="hdr-right">
-      <div class="updated">Last updated: May 2026</div>
-      <div id="mpill" class="pill pos">▲ +$10,060 P&amp;L vs Apr 26</div>
+      <div class="updated">Last updated: April 2026</div>
+      <div id="mpill" class="pill pos">▲ +$10,060 P&amp;L vs Mar 26</div>
     </div>
   </div>
 
   <div class="metrics">
-    <div class="metric hl"><div class="mlabel">Own cash invested</div><div class="mval" id="m-own">$78,928</div><div class="msub">your money, out of pocket</div></div>
+    <div class="metric hl"><div class="mlabel">Own cash invested</div><div class="mval" id="m-own">$83,427</div><div class="msub">your money, out of pocket</div></div>
     <div class="metric hl"><div class="mlabel">Current value</div><div class="mval" id="m-val">$106,521</div><div class="msub">all open positions</div></div>
-    <div class="metric hl"><div class="mlabel">Total return</div><div class="mval pos" id="m-ret">+$27,593</div><div class="msub pos" id="m-retp">+35.0% on own cash</div></div>
-    <div class="metric hl"><div class="mlabel">P&amp;L this month</div><div class="mval pos" id="m-month">+$10,060</div><div class="msub" id="m-monthsub">vs Apr 2026</div></div>
+    <div class="metric hl"><div class="mlabel">Total return</div><div class="mval pos" id="m-ret">+$22,862</div><div class="msub pos" id="m-retp">+27.4% on own cash</div></div>
+    <div class="metric hl"><div class="mlabel">P&amp;L this month</div><div class="mval pos" id="m-month">+$10,060</div><div class="msub" id="m-monthsub">vs Mar 2026</div></div>
     <div class="metric-divider"><span>Breakdown</span></div>
-    <div class="metric"><div class="mlabel">Cost base (open positions)</div><div class="mval neutral" id="m-cost">$88,526</div><div class="msub">incl. $9,598 recycled gains</div></div>
-    <div class="metric"><div class="mlabel">Unrealised P&amp;L</div><div class="mval" id="m-ur">+$22,862</div><div class="msub">value vs cost base</div></div>
-    <div class="metric"><div class="mlabel">IVV.AX benchmark</div><div class="mval" id="m-bench" style="color:var(--orange)">$115,449</div><div class="msub" id="m-bench-sub" style="color:var(--orange)">+46.3% same cash timing</div></div>
-    <div class="metric"><div class="mlabel">vs IVV.AX</div><div class="mval neg" id="m-vs-bench">-$8,928</div><div class="msub" id="m-vs-bench-sub">-11.3pp vs IVV.AX</div></div>
+    <div class="metric"><div class="mlabel">Cost base (open positions)</div><div class="mval neutral" id="m-cost">$93,025</div><div class="msub">incl. $9,598 recycled gains</div></div>
+    <div class="metric"><div class="mlabel">Unrealised P&amp;L</div><div class="mval" id="m-ur">+$13,496</div><div class="msub">value vs cost base</div></div>
+    <div class="metric"><div class="mlabel">IVV.AX benchmark</div><div class="mval" id="m-bench" style="color:var(--orange)">$115,449</div><div class="msub" id="m-bench-sub" style="color:var(--orange)">+38.4% same cash timing</div></div>
+    <div class="metric"><div class="mlabel">vs IVV.AX</div><div class="mval neg" id="m-vs-bench">-$8,928</div><div class="msub" id="m-vs-bench-sub">-11.0pp vs IVV.AX</div></div>
   </div>
 
   <div class="tabs">
     <button class="tab active" data-tab="home">Overview</button>
     <button class="tab" data-tab="holdings">Holdings</button>
     <button class="tab" data-tab="allocation">Allocation</button>
+    <button class="tab" data-tab="stockperf">Stock performance</button>
     <button class="tab" data-tab="update">Update values</button>
   </div>
 
@@ -150,7 +151,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;fon
           <span><span style="width:14px;height:0;border-top:2px dashed rgba(96,165,250,0.4);display:inline-block"></span>Cost base</span>
         </div>
         <div class="bench-box">
-          <strong>vs IVV.AX (AUD):</strong> Same cash invested into IVV at the same times would be worth <strong id="bb-bench">$115,449</strong> — a return of <strong style="color:var(--orange)" id="bb-benchret">+59.1%</strong> vs your portfolio's <strong class="pos" id="bb-portret">+33.1%</strong>. You're <strong id="bb-diff" class="neg">$20,027 behind</strong> the benchmark.
+          <strong>vs IVV.AX (AUD):</strong> Same cash invested into IVV at the same times would be worth <strong id="bb-bench">$115,449</strong> — a return of <strong style="color:var(--orange)" id="bb-benchret">+38.4%</strong> vs your portfolio's <strong class="pos" id="bb-portret">+27.4%</strong>. You're <strong id="bb-diff" class="neg">$8,928 behind the benchmark</strong> the benchmark.
         </div>
       </div>
       <div class="card">
@@ -209,17 +210,37 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;fon
     </div>
   </div>
 
+  <!-- STOCK PERFORMANCE -->
+  <div id="tab-stockperf" style="display:none">
+    <div class="card">
+      <div class="ctitle">Monthly performance by holding (%)</div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:16px;line-height:1.5">
+        Each holding's total P&amp;L as a % of cost, this month vs last month. The change column shows the percentage-point (pp) move — e.g. going from +40% to +50% is +10pp. Updates automatically each time you save.
+      </div>
+      <div style="overflow-x:auto">
+        <table class="htable" id="perf-table">
+          <thead id="perf-thead"></thead>
+          <tbody id="perf-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="card" style="margin-top:16px">
+      <div class="ctitle">Latest month (<span id="perf-latest-label">Apr 26</span>) — pp change, best to worst</div>
+      <div style="position:relative;width:100%;height:260px"><canvas id="perf-bar" role="img" aria-label="Latest month performance by holding">Latest month performance.</canvas></div>
+    </div>
+  </div>
+
   <!-- UPDATE -->
   <div id="tab-update" style="display:none">
-    <div class="note-box">⚡ Update values each month then click Save. For the benchmark to stay accurate, also enter the current IVV.AX price — check CommSec or Google for "IVV ASX price".</div>
+    <div class="note-box">⚡ Update your holding values each month then click Save. P&amp;L is calculated automatically (value − cost). For the benchmark, enter the current IVV.AX price — check CommSec or Google for "IVV ASX price".</div>
     <div class="card">
       <div class="ctitle">Update holdings</div>
       <div class="egrid" id="egrid"></div>
       <div class="update-extras">
         <div class="efield">
-          <label>Current month P&amp;L ($)</label>
-          <input type="number" id="cur-pl" value="21910" step="1">
-          <div class="hint">Total P/L from your spreadsheet this month (e.g. 21910). Used for the MoM delta.</div>
+          <label>This month's label</label>
+          <input type="text" id="cur-monthlabel" placeholder="e.g. Jun 26" style="width:120px">
+          <div class="hint">Optional — names the month for the "P&amp;L vs ___" comparison. P&amp;L is now calculated automatically from your values.</div>
         </div>
         <div class="efield">
           <label>IVV.AX price (AUD $)</label>
@@ -254,45 +275,45 @@ const TP = 9598;
 
 const H = [
   // label       val      cost     pl       tp     ivvBench  ivvPrice
-  ['Dec 22',   26602,   34895,  -8544,  false, 30000,   34.17],
-  ['Jan 23',   27359,   36016,  -8904,  false, 30252,   33.18],
-  ['Feb 23',   31909,   37126,  -5464,  false, 33942,   36.01],
-  ['Mar 23',   33382,   38593,  -5474,  false, 34627,   35.18],
-  ['Apr 23',   35435,   39427,  -4233,  false, 37341,   37.09],
-  ['May 23',   36110,   39827,  -3954,  false, 38425,   37.77],
-  ['Jun 23',   42804,   41125,   1433,  false, 40903,   38.93],
-  ['Jul 23',   42320,   43227,  -1147,  false, 44224,   40.09],
-  ['Aug 23',   43668,   46028,  -2629,  false, 47588,   40.60],
-  ['Sep 23',   45398,   46228,  -1096,  false, 48233,   40.98],
-  ['Oct 23',   43535,   46629,  -3334,  false, 47292,   39.84],
-  ['Nov 23',   47243,   49129,  -2124,  false, 50149,   40.14],
-  ['Dec 23',   50792,   49529,   1047,  false, 51448,   40.86],
-  ['Jan 24',   54544,   49627,   4700,  false, 54795,   43.44],
-  ['Feb 24',   54285,   49628,   4432,  false, 57596,   45.66],
-  ['Mar 24',   56518,   49628,   6665,  false, 59412,   47.10],
-  ['Apr 24',   57872,   51630,   6028,  false, 61187,   46.92],
-  ['May 24',   54035,   51629,   2216,  false, 60887,   46.69],
-  ['Jun 24',   54520,   51629,   2697,  false, 62935,   48.26],
-  ['Jul 24',   55871,   51629,   4036,  false, 65647,   50.34],
-  ['Aug 24',   54260,   54129,    -47,  false, 65174,   48.06],
-  ['Sep 24',   55962,   54607,   1165,  false, 66154,   48.43],
-  ['Oct 24',   58128,   55557,   2390,  false, 72158,   52.13],
-  ['Dec 24',   74756,   57468,  17114,  false, 81363,   57.40],
-  ['Jan 25',   76115,   59882,  16061,  false, 83225,   57.01],
-  ['Feb 25',   79558,   60409,  18977,  false, 83912,   57.12],
-  ['Mar 25',   73869,   61338,  12357,  false, 79905,   53.76],
-  ['Apr 25',   69335,   63705,   5471,  false, 76431,   49.83],
-  ['May 25',   73037,   65672,   7221,  false, 84180,   53.60],
-  ['Jun 25',   79820,   66633,  13027,  false, 86445,   54.43],
-  ['Sep 25',   87295,   66634,  20481,  false, 90019,   56.68],
-  ['Oct 25',  101036,   76633,  24226,  false, 105545,   60.16],
-  ['Nov 25',  107509,   78112,  29236,  false, 110726,   62.27],
-  ['Dec 25',  103852,   78032,  25642,  false, 116470,   65.50],
-  ['Jan 26',  103522,   78033,  25324,  false, 116168,   65.33],
-  ['Feb 26',  102589,   85284,  26727,  true, 114301,   64.28],
-  ['Mar 26',  100915,   86706,  21110,  true, 113518,   63.04],
-  ['Apr 26',   92928,   86703,  12802,  true, 114437,   63.55],
-  ['May 26',  106521,   88526,  22862,  true, 115449,   63.10],
+  ['Nov 22',   26602,   34895,  -8544,  false, 30000,   34.17],
+  ['Dec 22',   27359,   36016,  -8904,  false, 30252,   33.18],
+  ['Jan 23',   31909,   37126,  -5464,  false, 33942,   36.01],
+  ['Feb 23',   33382,   38593,  -5474,  false, 34627,   35.18],
+  ['Mar 23',   35435,   39427,  -4233,  false, 37341,   37.09],
+  ['Apr 23',   36110,   39827,  -3954,  false, 38425,   37.77],
+  ['May 23',   42804,   41125,   1433,  false, 40903,   38.93],
+  ['Jun 23',   42320,   43227,  -1147,  false, 44224,   40.09],
+  ['Jul 23',   43668,   46028,  -2629,  false, 47588,   40.60],
+  ['Aug 23',   45398,   46228,  -1096,  false, 48233,   40.98],
+  ['Sep 23',   43535,   46629,  -3334,  false, 47292,   39.84],
+  ['Oct 23',   47243,   49129,  -2124,  false, 50149,   40.14],
+  ['Nov 23',   50792,   49529,   1047,  false, 51448,   40.86],
+  ['Dec 23',   54544,   49627,   4700,  false, 54795,   43.44],
+  ['Jan 24',   54285,   49628,   4432,  false, 57596,   45.66],
+  ['Feb 24',   56518,   49628,   6665,  false, 59412,   47.10],
+  ['Mar 24',   57872,   51630,   6028,  false, 61187,   46.92],
+  ['Apr 24',   54035,   51629,   2216,  false, 60887,   46.69],
+  ['May 24',   54520,   51629,   2697,  false, 62935,   48.26],
+  ['Jun 24',   55871,   51629,   4036,  false, 65647,   50.34],
+  ['Jul 24',   54260,   54129,    -47,  false, 65174,   48.06],
+  ['Aug 24',   55962,   54607,   1165,  false, 66154,   48.43],
+  ['Sep 24',   58128,   55557,   2390,  false, 72158,   52.13],
+  ['Nov 24',   74756,   57468,  17114,  false, 81363,   57.40],
+  ['Dec 24',   76115,   59882,  16061,  false, 83225,   57.01],
+  ['Jan 25',   79558,   60409,  18977,  false, 83912,   57.12],
+  ['Feb 25',   73869,   61338,  12357,  false, 79905,   53.76],
+  ['Mar 25',   69335,   63705,   5471,  false, 76431,   49.83],
+  ['Apr 25',   73037,   65672,   7221,  false, 84180,   53.60],
+  ['May 25',   79820,   66633,  13027,  false, 86445,   54.43],
+  ['Aug 25',   87295,   66634,  20481,  false, 90019,   56.68],
+  ['Sep 25',  101036,   76633,  24226,  false, 105545,   60.16],
+  ['Oct 25',  107509,   78112,  29236,  false, 110726,   62.27],
+  ['Nov 25',  103852,   78032,  25642,  false, 116470,   65.50],
+  ['Dec 25',  103522,   78033,  25324,  false, 116168,   65.33],
+  ['Jan 26',  102589,   85284,  26727,  true, 114301,   64.28],
+  ['Feb 26',  100915,   86706,  21110,  true, 113518,   63.04],
+  ['Mar 26',   92928,   86703,  12802,  true, 114437,   63.55],
+  ['Apr 26',  106521,   88526,  22862,  true, 115449,   63.10],
 ];
 
 // Total IVV units held at end of history (used as base for future months)
@@ -326,7 +347,7 @@ const DEF = [
   {key:'URNM',   name:'URNM',       val:4581,  cost:5527 },
   {key:'WIRE',   name:'WIRE',       val:5286,  cost:5519 },
   {key:'USETFS', name:'US ETFs',    val:8454,  cost:9576 },
-  {key:'SLVM',   name:'SLVM',       val:4532,  cost:4565 },
+  {key:'SLVM',   name:'SLVM',       val:4532,  cost:4499 },
 ];
 
 const COL = ['#34d399','#60a5fa','#f472b6','#fbbf24','#a78bfa','#fb923c',
@@ -336,7 +357,18 @@ const COL = ['#34d399','#60a5fa','#f472b6','#fbbf24','#a78bfa','#fb923c',
 // ── STATE ────────────────────────────────────────────────────────────────────
 let hlds = loadH(), CI = {};
 let sortKey = 'val', sortDir = 1; // default: value descending
-let currentMonthPL  = loadNum('inv_curpl',  H[H.length-1][3]);
+// Previous month's P&L, used as the baseline for the MoM delta.
+// Defaults to Apr 26's P&L from history. Updated each time you Save.
+let prevMonthPL = loadNum('inv_prevpl', H[H.length-2][3]);
+// Per-stock snapshot of last month's P&L {key: pl}. Captured each time you Save.
+// Used to show this-month-vs-last-month gain/loss per holding on the Stock performance tab.
+let prevStockPL = loadObj('inv_prevstockpl', null);
+let prevStockLabel = loadStr('inv_prevstocklabel', 'Mar 26');
+let curStockLabel  = loadStr('inv_curstocklabel', 'Apr 26');
+// Seed default previous-month per-stock P&L + cost (Mar 26) if none stored yet
+if(prevStockPL === null){
+  prevStockPL = {"BHP": {"pl": -23, "cost": 2017}, "NVA": {"pl": -125, "cost": 2019}, "RIO": {"pl": 499, "cost": 1925}, "NAS100": {"pl": 10421, "cost": 23889}, "MSFT": {"pl": 669, "cost": 1980}, "META": {"pl": 1336, "cost": 1988}, "GOOGL": {"pl": 4786, "cost": 3747}, "ACDC": {"pl": -229, "cost": 4920}, "CRYPTO": {"pl": -8950, "cost": 11500}, "SCAPS": {"pl": -1452, "cost": 11400}, "NIC": {"pl": -101, "cost": 2517}, "URNM": {"pl": -831, "cost": 5025}, "WIRE": {"pl": -921, "cost": 5015}, "USETFS": {"pl": -1674, "cost": 8761}, "SLVM": {"pl": -201, "cost": 1819}};
+}
 let currentIvvPrice = loadNum('inv_ivvprice', H[H.length-1][6]);
 // IVV units accumulate — whenever new cash added, more units bought
 // For future months the live benchmark = BASE_IVV_UNITS * currentIvvPrice
@@ -347,6 +379,10 @@ function loadH(){ try{ const s=localStorage.getItem('inv_v10'); if(s) return JSO
 function saveH(){ try{ localStorage.setItem('inv_v10',JSON.stringify(hlds)); }catch(e){} }
 function loadNum(key, def){ try{ const s=localStorage.getItem(key); if(s) return parseFloat(s); }catch(e){} return def; }
 function saveNum(key, v){ try{ localStorage.setItem(key, String(v)); }catch(e){} }
+function loadStr(key, def){ try{ const s=localStorage.getItem(key); if(s!==null) return s; }catch(e){} return def; }
+function saveStr(key, v){ try{ localStorage.setItem(key, v); }catch(e){} }
+function loadObj(key, def){ try{ const s=localStorage.getItem(key); if(s) return JSON.parse(s); }catch(e){} return def; }
+function saveObj(key, v){ try{ localStorage.setItem(key, JSON.stringify(v)); }catch(e){} }
 
 // ── STATS ────────────────────────────────────────────────────────────────────
 function stats(){
@@ -354,14 +390,16 @@ function stats(){
   const wc   = hlds.filter(h => h.cost!==null);
   const cost = wc.reduce((s,h) => s+(h.cost||0), 0);
   const own  = cost - TP;
-  const ret  = tv - own;
-  const retp = own>0?(ret/own)*100:0;
   const ur   = tv - cost;
 
-  // MoM P&L delta — reads from stored currentMonthPL vs H[-2]
-  const prevPL    = H[H.length-2][3];
-  const month     = currentMonthPL - prevPL;
-  const prevLabel = H[H.length-2][0];
+  // Total P&L (matches spreadsheet): sum of each holding's (value - cost),
+  // counting only holdings that have a cost base (excludes WDS), plus realised TPs.
+  const holdingsPL = wc.reduce((s,h) => s + (h.val - h.cost), 0);
+  const currentPL  = holdingsPL + TP;
+  const ret        = currentPL;                    // total return = total P&L
+  const retp       = own>0?(ret/own)*100:0;
+  const month      = currentPL - prevMonthPL;
+  const prevLabel  = loadStr('inv_prevlabel', H[H.length-2][0]);
 
   // Live benchmark = (BASE_IVV_UNITS + any new units from extra injections) × current IVV price
   const totalUnits = BASE_IVV_UNITS + ivvUnitsExtra;
@@ -622,13 +660,97 @@ function buildAll(){
   buildAllocChart('ca-home','leg-home',true);
 }
 
+// ── STOCK PERFORMANCE ────────────────────────────────────────────────────────
+
+function colourForVal(v, maxAbs){
+  if(v===null||v===undefined) return 'transparent';
+  const intensity = Math.min(Math.abs(v)/maxAbs, 1);
+  if(v>=0) return `rgba(52,211,153,${0.12+intensity*0.5})`;
+  return `rgba(248,113,113,${0.12+intensity*0.5})`;
+}
+
+function renderStockPerf(){
+  // Compare each holding's P&L % (P&L / cost) this month vs last month.
+  const nameOf = k => { const d=DEF.find(x=>x.key===k); return d?d.name:k; };
+  const rows = [];
+  hlds.forEach(h => {
+    if(h.cost === null || h.cost === 0) return;     // skip holdings with no cost base
+    const curPct = ((h.val - h.cost) / h.cost) * 100;
+    // prevStockPL stores last month's P&L $ and cost so we can recompute the %.
+    let prevPct = null;
+    if(prevStockPL && prevStockPL[h.key]){
+      const p = prevStockPL[h.key];
+      if(p.cost && p.cost !== 0) prevPct = (p.pl / p.cost) * 100;
+    }
+    const change = prevPct === null ? null : curPct - prevPct;  // percentage-point change
+    rows.push({ key:h.key, name:nameOf(h.key), curPct, prevPct, change });
+  });
+
+  // Sort best to worst by monthly change
+  rows.sort((a,b) => (b.change ?? -Infinity) - (a.change ?? -Infinity));
+  const maxAbs = Math.max(1, ...rows.map(r => r.change!==null?Math.abs(r.change):0));
+
+  // Header
+  document.getElementById('perf-thead').innerHTML =
+    `<tr><th style="text-align:left">Holding</th>
+      <th style="text-align:right">${prevStockLabel}</th>
+      <th style="text-align:right">${curStockLabel}</th>
+      <th style="text-align:right">Change (pp)</th></tr>`;
+
+  // Body
+  const tbody = document.getElementById('perf-tbody');
+  tbody.innerHTML = '';
+  rows.forEach(r => {
+    const ci = DEF.findIndex(d=>d.key===r.key);
+    const col = COL[ci%COL.length];
+    const changeCell = r.change===null
+      ? '<td style="color:var(--muted)">—</td>'
+      : `<td style="background:${colourForVal(r.change,maxAbs)};border-radius:4px;font-weight:600">${(r.change>=0?'+':'')+r.change.toFixed(1)}pp</td>`;
+    tbody.innerHTML += `<tr>
+      <td><span class="ticker" style="color:${col}">${r.name}</span></td>
+      <td class="neutral">${r.prevPct===null?'—':fpc(r.prevPct)}</td>
+      <td class="${r.curPct>=0?'pos':'neg'}">${fpc(r.curPct)}</td>
+      ${changeCell}
+    </tr>`;
+  });
+
+  document.getElementById('perf-latest-label').textContent = curStockLabel;
+  buildPerfBar(rows);
+}
+
+function buildPerfBar(rows){
+  if(CI['perfbar']){ CI['perfbar'].destroy(); delete CI['perfbar']; }
+  const data = rows.filter(r => r.change !== null).sort((a,b)=>b.change-a.change);
+  CI['perfbar'] = new Chart(document.getElementById('perf-bar'), {
+    type: 'bar',
+    data: {
+      labels: data.map(x=>x.name),
+      datasets: [{
+        data: data.map(x=>x.change),
+        backgroundColor: data.map(x=>x.change>=0?'rgba(52,211,153,0.75)':'rgba(248,113,113,0.75)'),
+        borderRadius: 4, borderSkipped: false
+      }]
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend:{display:false}, tooltip:{callbacks:{label:ctx=>(ctx.raw>=0?'+':'')+ctx.raw.toFixed(1)+'pp'}} },
+      scales: {
+        x: { ticks:{font:tf,color:tc,callback:v=>(v>=0?'+':'')+v+'pp'}, grid:{color:gc}, border:{color:'transparent'} },
+        y: { ticks:{font:{family:'DM Sans',size:11},color:'#9ca3af'}, grid:{display:false}, border:{color:'transparent'} }
+      }
+    }
+  });
+}
+
 // ── TABS ─────────────────────────────────────────────────────────────────────
-const TABS=['home','holdings','allocation','update'];
+const TABS=['home','holdings','allocation','stockperf','update'];
 function switchTab(name){
   TABS.forEach(t=>document.getElementById('tab-'+t).style.display=t===name?'':'none');
   document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===name));
   if(name==='holdings')   renderHoldings();
   if(name==='allocation') setTimeout(()=>buildAllocChart('ca-full','leg-full',false),30);
+  if(name==='stockperf')  setTimeout(renderStockPerf,30);
   if(name==='update'){    renderEditForm(); populateUpdateExtras(); }
 }
 document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>switchTab(b.dataset.tab)));
@@ -648,13 +770,21 @@ function renderEditForm(){
 }
 
 function populateUpdateExtras(){
-  const pl=document.getElementById('cur-pl'); if(pl) pl.value=currentMonthPL;
   const iv=document.getElementById('cur-ivv'); if(iv) iv.value=currentIvvPrice.toFixed(2);
   const un=document.getElementById('cur-units'); if(un) un.value=(BASE_IVV_UNITS+ivvUnitsExtra).toFixed(4);
+  const lbl=document.getElementById('cur-monthlabel'); if(lbl) lbl.value='';
 }
 
 function saveEdits(){
-  // Read holdings
+  // Capture the P&L from BEFORE this update — it becomes "last month" for the delta.
+  const beforeStats = stats();
+  const beforeWc = hlds.filter(h=>h.cost!==null);
+  const beforePL = beforeWc.reduce((s,h)=>s+(h.val-h.cost),0) + TP;
+  // Capture per-stock P&L + cost before the update (becomes "last month" on the perf tab)
+  const beforeStockPL = {};
+  hlds.forEach(h => { if(h.cost!==null) beforeStockPL[h.key] = { pl: h.val - h.cost, cost: h.cost }; });
+
+  // Read updated holdings
   hlds.forEach(h=>{
     const v=document.getElementById('ev-'+h.key);
     const i=document.getElementById('ei-'+h.key);
@@ -663,18 +793,30 @@ function saveEdits(){
   });
   saveH();
 
-  // Read extras
-  const plEl=document.getElementById('cur-pl');
-  if(plEl){ currentMonthPL=parseFloat(plEl.value)||currentMonthPL; saveNum('inv_curpl',currentMonthPL); }
+  // The P&L that was showing before this save becomes the new "previous month" baseline.
+  prevMonthPL = beforePL;
+  saveNum('inv_prevpl', prevMonthPL);
+  // Roll the per-stock comparison: what was "current" becomes "previous"
+  prevStockPL = beforeStockPL;
+  saveObj('inv_prevstockpl', prevStockPL);
+  // Roll the month labels. The label you enter is the NEW current month.
+  const lblEl=document.getElementById('cur-monthlabel');
+  if(lblEl && lblEl.value.trim()){
+    prevStockLabel = curStockLabel;       // old current becomes previous
+    curStockLabel  = lblEl.value.trim();  // entered label is new current
+    saveStr('inv_prevstocklabel', prevStockLabel);
+    saveStr('inv_curstocklabel',  curStockLabel);
+    saveStr('inv_prevlabel', prevStockLabel);
+  }
 
+  // IVV benchmark — buy more units if own cash increased
   const ivvEl=document.getElementById('cur-ivv');
   if(ivvEl){
     const newIvvPrice=parseFloat(ivvEl.value)||currentIvvPrice;
-    // If own cash increased this month (new injection), buy more IVV units
     const wc=hlds.filter(h=>h.cost!==null);
     const newCost=wc.reduce((s,h)=>s+(h.cost||0),0);
     const newOwn=newCost-TP;
-    const prevOwn=H[H.length-1][4]?H[H.length-1][2]-TP:H[H.length-1][2];
+    const prevOwn=(beforeStats.cost)-TP;
     const injection=newOwn-prevOwn;
     if(injection>0) ivvUnitsExtra+=injection/newIvvPrice;
     saveNum('inv_ivvunits_extra',ivvUnitsExtra);
