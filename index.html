@@ -126,8 +126,8 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;fon
     <div class="metric-divider"><span>Breakdown</span></div>
     <div class="metric"><div class="mlabel">Cost base (open positions)</div><div class="mval neutral" id="m-cost">$93,025</div><div class="msub">incl. $9,598 recycled gains</div></div>
     <div class="metric"><div class="mlabel">Unrealised P&amp;L</div><div class="mval" id="m-ur">+$15,752</div><div class="msub">value vs cost base</div></div>
-    <div class="metric"><div class="mlabel">IVV.AX benchmark</div><div class="mval" id="m-bench" style="color:var(--orange)">$133,360</div><div class="msub" id="m-bench-sub" style="color:var(--orange)">+59.8% same cash timing</div></div>
-    <div class="metric"><div class="mlabel">vs IVV.AX</div><div class="mval neg" id="m-vs-bench">-$24,583</div><div class="msub" id="m-vs-bench-sub">-29.7pp vs IVV.AX</div></div>
+    <div class="metric"><div class="mlabel">IVV.AX benchmark</div><div class="mval" id="m-bench" style="color:var(--orange)">$118,434</div><div class="msub" id="m-bench-sub" style="color:var(--orange)">+42.0% same cash timing</div></div>
+    <div class="metric"><div class="mlabel">vs IVV.AX</div><div class="mval neg" id="m-vs-bench">-$9,657</div><div class="msub" id="m-vs-bench-sub">-11.6pp vs IVV.AX</div></div>
   </div>
 
   <div class="tabs">
@@ -135,6 +135,8 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;fon
     <button class="tab" data-tab="holdings">Holdings</button>
     <button class="tab" data-tab="allocation">Allocation</button>
     <button class="tab" data-tab="stockperf">Stock performance</button>
+    <button class="tab" data-tab="history">History</button>
+    <button class="tab" data-tab="holdinghist">Holding history</button>
     <button class="tab" data-tab="update">Update values</button>
   </div>
 
@@ -151,7 +153,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;fon
           <span><span style="width:14px;height:0;border-top:2px dashed rgba(96,165,250,0.4);display:inline-block"></span>Cost base</span>
         </div>
         <div class="bench-box">
-          <strong>vs IVV.AX (AUD):</strong> Same cash invested into IVV at the same times would be worth <strong id="bb-bench">$115,449</strong> — a return of <strong style="color:var(--orange)" id="bb-benchret">+38.4%</strong> vs your portfolio's <strong class="pos" id="bb-portret">+27.4%</strong>. You're <strong id="bb-diff" class="neg">$8,928 behind the benchmark</strong> the benchmark.
+          <strong>vs IVV.AX (AUD):</strong> Same cash invested into IVV at the same times would be worth <strong id="bb-bench">$118,434</strong> — a return of <strong style="color:var(--orange)" id="bb-benchret">+42.0%</strong> vs your portfolio's <strong class="pos" id="bb-portret">+30.4%</strong>. You're <strong id="bb-diff" class="neg">$9,657 behind the benchmark</strong> the benchmark.
         </div>
       </div>
       <div class="card">
@@ -230,6 +232,48 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;fon
     </div>
   </div>
 
+  <!-- HISTORY (portfolio-level monthly) -->
+  <div id="tab-history" style="display:none">
+    <div class="card">
+      <div class="ctitle">Monthly history</div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:16px;line-height:1.5">
+        Your portfolio month by month. Added capital is the new cash you put in that month (derived from the change in cost base). Newest first.
+      </div>
+      <div style="overflow-x:auto">
+        <table class="htable" id="hist-table">
+          <thead id="hist-thead"></thead>
+          <tbody id="hist-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- HOLDING HISTORY (month-by-month, spreadsheet style) -->
+  <div id="tab-holdinghist" style="display:none">
+    <div class="card">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:16px">
+        <div>
+          <div class="ctitle" style="margin-bottom:4px">Monthly snapshot</div>
+          <div style="font-size:12px;color:var(--muted)">Full holding detail for any month, like a page of your spreadsheet.</div>
+        </div>
+        <div class="efield">
+          <label>Select month</label>
+          <select id="hh-month" onchange="renderHoldingHist()" style="background:var(--bg);border:1px solid var(--border2);border-radius:6px;color:var(--text);font-family:'DM Mono',monospace;font-size:13px;padding:7px 10px;min-width:130px;outline:none"></select>
+        </div>
+      </div>
+      <div style="overflow-x:auto">
+        <table class="htable" id="hh-table">
+          <thead><tr>
+            <th>Holding</th><th>Value</th><th>Cost base</th><th>P&amp;L $</th><th>P&amp;L %</th>
+          </tr></thead>
+          <tbody id="hh-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  </div>
+
   <!-- UPDATE -->
   <div id="tab-update" style="display:none">
     <div class="note-box">⚡ Update your holding values each month then click Save. P&amp;L is calculated automatically (value − cost). For the benchmark, enter the current IVV.AX price — check CommSec or Google for "IVV ASX price".</div>
@@ -287,46 +331,46 @@ const TP = 9598;
 
 const H = [
   // label       val      cost     pl       tp     ivvBench  ivvPrice
-  ['Nov 22',   26602,   34895,  -8544,  false, 30000,   34.17],
-  ['Dec 22',   27359,   36016,  -8904,  false, 30252,   33.18],
-  ['Jan 23',   31909,   37126,  -5464,  false, 33942,   36.01],
-  ['Feb 23',   33382,   38593,  -5474,  false, 34627,   35.18],
-  ['Mar 23',   35435,   39427,  -4233,  false, 37341,   37.09],
-  ['Apr 23',   36110,   39827,  -3954,  false, 38425,   37.77],
-  ['May 23',   42804,   41125,   1433,  false, 40903,   38.93],
-  ['Jun 23',   42320,   43227,  -1147,  false, 44224,   40.09],
-  ['Jul 23',   43668,   46028,  -2629,  false, 47588,   40.60],
-  ['Aug 23',   45398,   46228,  -1096,  false, 48233,   40.98],
-  ['Sep 23',   43535,   46629,  -3334,  false, 47292,   39.84],
-  ['Oct 23',   47243,   49129,  -2124,  false, 50149,   40.14],
-  ['Nov 23',   50792,   49529,   1047,  false, 51448,   40.86],
-  ['Dec 23',   54544,   49627,   4700,  false, 54795,   43.44],
-  ['Jan 24',   54285,   49628,   4432,  false, 57596,   45.66],
-  ['Feb 24',   56518,   49628,   6665,  false, 59412,   47.10],
-  ['Mar 24',   57872,   51630,   6028,  false, 61187,   46.92],
-  ['Apr 24',   54035,   51629,   2216,  false, 60887,   46.69],
-  ['May 24',   54520,   51629,   2697,  false, 62935,   48.26],
-  ['Jun 24',   55871,   51629,   4036,  false, 65647,   50.34],
-  ['Jul 24',   54260,   54129,    -47,  false, 65174,   48.06],
-  ['Aug 24',   55962,   54607,   1165,  false, 66154,   48.43],
-  ['Sep 24',   58128,   55557,   2390,  false, 72158,   52.13],
-  ['Nov 24',   74756,   57468,  17114,  false, 81363,   57.40],
-  ['Dec 24',   76115,   59882,  16061,  false, 83225,   57.01],
-  ['Jan 25',   79558,   60409,  18977,  false, 83912,   57.12],
-  ['Feb 25',   73869,   61338,  12357,  false, 79905,   53.76],
-  ['Mar 25',   69335,   63705,   5471,  false, 76431,   49.83],
-  ['Apr 25',   73037,   65672,   7221,  false, 84180,   53.60],
-  ['May 25',   79820,   66633,  13027,  false, 86445,   54.43],
-  ['Aug 25',   87295,   66634,  20481,  false, 90019,   56.68],
-  ['Sep 25',  101036,   76633,  24226,  false, 105545,   60.16],
-  ['Oct 25',  107509,   78112,  29236,  false, 110726,   62.27],
-  ['Nov 25',  103852,   78032,  25642,  false, 116470,   65.50],
-  ['Dec 25',  103522,   78033,  25324,  false, 116168,   65.33],
-  ['Jan 26',  102589,   85284,  26727,  true, 114301,   64.28],
-  ['Feb 26',  100915,   86706,  21110,  true, 113518,   63.04],
-  ['Mar 26',   92928,   86703,  12802,  true, 114437,   63.55],
-  ['Apr 26',  106521,   93025,  22862,  true, 115449,   63.10],
-  ['May 26', 108777,   93025,  25135,  true, 133360,   70.43],
+  ['Nov 22',   26602,   34895,   -8544, false,   30000,   39.50],
+  ['Dec 22',   27359,   36016,   -8904, false,   31007,   39.35],
+  ['Jan 23',   31909,   37126,   -5464, false,   31116,   38.08],
+  ['Feb 23',   33382,   38593,   -5474, false,   33809,   39.58],
+  ['Mar 23',   35435,   39427,   -4233, false,   35395,   40.46],
+  ['Apr 23',   36110,   39827,   -3954, false,   36818,   41.63],
+  ['May 23',   42804,   41125,    1433, false,   39452,   43.14],
+  ['Jun 23',   42320,   43227,   -1147, false,   42752,   44.45],
+  ['Jul 23',   43668,   46028,   -2629, false,   46697,   45.64],
+  ['Aug 23',   45398,   46228,   -1096, false,   47818,   46.54],
+  ['Sep 23',   43535,   46629,   -3334, false,   46133,   44.51],
+  ['Oct 23',   47243,   49129,   -2124, false,   47680,   43.59],
+  ['Nov 23',   50792,   49529,    1047, false,   50453,   45.76],
+  ['Dec 23',   54544,   49627,    4700, false,   51621,   46.73],
+  ['Jan 24',   54285,   49628,    4432, false,   54947,   49.74],
+  ['Feb 24',   56518,   49628,    6665, false,   57366,   51.93],
+  ['Mar 24',   57872,   51630,    6028, false,   61114,   53.51],
+  ['Apr 24',   54035,   51629,    2216, false,   59640,   52.22],
+  ['May 24',   54520,   51629,    2697, false,   60029,   52.56],
+  ['Jun 24',   55871,   51629,    4036, false,   63306,   55.43],
+  ['Jul 24',   54260,   54129,     -47, false,   66640,   56.16],
+  ['Aug 24',   55962,   54607,    1165, false,   65718,   54.98],
+  ['Sep 24',   58128,   55557,    2390, false,   66979,   55.24],
+  ['Nov 24',   74756,   57468,   17114, false,   76577,   61.58],
+  ['Dec 24',   76115,   59882,   16061, false,   81055,   63.24],
+  ['Jan 25',   79558,   60409,   18977, false,   83928,   65.07],
+  ['Feb 25',   73869,   61338,   12357, false,   82148,   62.97],
+  ['Mar 25',   69335,   63705,    5471, false,   78971,   58.72],
+  ['Apr 25',   73037,   65672,    7221, false,   79351,   57.54],
+  ['May 25',   79820,   66633,   13027, false,   85387,   61.22],
+  ['Aug 25',   87295,   66634,   20481, false,   92417,   66.26],
+  ['Sep 25',  101036,   76633,   24226, false,  103881,   67.31],
+  ['Oct 25',  107509,   78112,   29236, false,  109280,   69.85],
+  ['Nov 25',  103852,   78032,   25642, false,  109264,   69.84],
+  ['Dec 25',  103522,   78033,   25324, false,  107091,   68.45],
+  ['Jan 26',  102589,   85284,   26727,  true,  103164,   65.94],
+  ['Feb 26',  100915,   86706,   21110,  true,  102270,   64.46],
+  ['Mar 26',   92928,   86703,   12802,  true,   98494,   62.08],
+  ['Apr 26',  106521,   93025,   22862,  true,  111892,   66.54],
+  ['May 26',  108777,   93025,   25135,  true,  118434,   70.43],
 ];
 
 // Merge any months you've added via the Update tab (stored in your browser).
@@ -356,7 +400,7 @@ function computeIvvUnits(){
   });
   return units;
 }
-const BASE_IVV_UNITS = 1893.5046; // $30k start + injections through May 26 // precomputed from spreadsheet May 26 figures
+const BASE_IVV_UNITS = 1681.5789; // $30k start + injections, real IVV.AX prices
 
 // ── DEFAULT HOLDINGS (May 2026) ──────────────────────────────────────────────
 const DEF = [
@@ -767,14 +811,133 @@ function buildPerfBar(rows){
   });
 }
 
+// ── HISTORY TABS ─────────────────────────────────────────────────────────────
+// Per-holding value history pulled from your spreadsheet (extends as you save).
+const MONTHLY_FULL = {"labels": ["Nov 22", "Dec 22", "Jan 23", "Feb 23", "Mar 23", "Apr 23", "May 23", "Jun 23", "Jul 23", "Aug 23", "Sep 23", "Oct 23", "Nov 23", "Dec 23", "Jan 24", "Feb 24", "Mar 24", "Apr 24", "May 24", "Jun 24", "Jul 24", "Aug 24", "Sep 24", "Nov 24", "Dec 24", "Jan 25", "Feb 25", "Mar 25", "Apr 25", "May 25", "Aug 25", "Sep 25", "Oct 25", "Nov 25", "Dec 25", "Jan 26", "Feb 26", "Mar 26", "Apr 26", "May 26"], "monthly": {"Nov 22": {"BHP": {"v": 1800, "c": 2017}, "NVA": {"v": 1823, "c": 2018}, "RIO": {"v": 1731, "c": 1924}, "NAS100": {"v": 6545, "c": 6900}, "MSFT": {"v": 1764, "c": 1980}, "META": {"v": 697, "c": 1987}, "GOOGL": {"v": 2637, "c": 3746}, "CRYPTO": {"v": 769, "c": 1458}, "WDS": {"v": 251, "c": null}}, "Dec 22": {"BHP": {"v": 1767, "c": 2016}, "NVA": {"v": 1950, "c": 2019}, "RIO": {"v": 1731, "c": 1924}, "NAS100": {"v": 7346, "c": 7879}, "MSFT": {"v": 1752, "c": 1980}, "META": {"v": 703, "c": 1987}, "GOOGL": {"v": 2578, "c": 3746}, "CRYPTO": {"v": 755, "c": 1500}, "WDS": {"v": 247, "c": null}}, "Jan 23": {"BHP": {"v": 1905, "c": 2017}, "NVA": {"v": 1936, "c": 2019}, "RIO": {"v": 1881, "c": 1924}, "NAS100": {"v": 8746, "c": 8585}, "MSFT": {"v": 1858, "c": 1981}, "META": {"v": 1060, "c": 1988}, "GOOGL": {"v": 3025, "c": 3746}, "CRYPTO": {"v": 993, "c": 1500}, "WDS": {"v": 247, "c": null}}, "Feb 23": {"BHP": {"v": 1869, "c": 2016}, "NVA": {"v": 1459, "c": 2019}, "RIO": {"v": 1875, "c": 1925}, "NAS100": {"v": 10203, "c": 9555}, "MSFT": {"v": 1899, "c": 1979}, "META": {"v": 1094, "c": 1988}, "GOOGL": {"v": 2814, "c": 3746}, "CRYPTO": {"v": 996, "c": 1500}, "WDS": {"v": 263, "c": null}}, "Mar 23": {"BHP": {"v": 1792, "c": 2018}, "NVA": {"v": 1305, "c": 2020}, "RIO": {"v": 1766, "c": 1924}, "NAS100": {"v": 11208, "c": 9985}, "MSFT": {"v": 2112, "c": 1981}, "META": {"v": 1253, "c": 1988}, "GOOGL": {"v": 3069, "c": 3746}, "CRYPTO": {"v": 1124, "c": 1500}, "WDS": {"v": 241, "c": null}}, "Apr 23": {"BHP": {"v": 1723, "c": 2017}, "NVA": {"v": 940, "c": 2019}, "RIO": {"v": 1683, "c": 1924}, "NAS100": {"v": 11537, "c": 9985}, "MSFT": {"v": 2300, "c": 1981}, "META": {"v": 1439, "c": 1988}, "GOOGL": {"v": 3214, "c": 3747}, "CRYPTO": {"v": 1152, "c": 1500}, "WDS": {"v": 237, "c": null}}, "May 23": {"BHP": {"v": 1696, "c": 2017}, "NVA": {"v": 813, "c": 2018}, "RIO": {"v": 1639, "c": 1924}, "NAS100": {"v": 12734, "c": 9985}, "MSFT": {"v": 2529, "c": 1981}, "META": {"v": 1592, "c": 1988}, "GOOGL": {"v": 3786, "c": 3747}, "CRYPTO": {"v": 4604, "c": 2400}, "WDS": {"v": 246, "c": null}}, "Jun 23": {"BHP": {"v": 1753, "c": 2017}, "NVA": {"v": 744, "c": 2019}, "RIO": {"v": 1716, "c": 1924}, "NAS100": {"v": 13089, "c": 9986}, "MSFT": {"v": 2521, "c": 1981}, "META": {"v": 1713, "c": 1988}, "GOOGL": {"v": 3608, "c": 3747}, "CRYPTO": {"v": 2935, "c": 4400}, "WDS": {"v": 240, "c": null}}, "Jul 23": {"BHP": {"v": 1704, "c": 2017}, "NVA": {"v": 870, "c": 2020}, "RIO": {"v": 1585, "c": 1924}, "NAS100": {"v": 12969, "c": 9985}, "MSFT": {"v": 2448, "c": 1981}, "META": {"v": 1753, "c": 1989}, "GOOGL": {"v": 3943, "c": 3746}, "CRYPTO": {"v": 3668, "c": 6400}, "WDS": {"v": 269, "c": null}}, "Aug 23": {"BHP": {"v": 1798, "c": 2017}, "NVA": {"v": 758, "c": 2020}, "RIO": {"v": 1760, "c": 1925}, "NAS100": {"v": 13659, "c": 9985}, "MSFT": {"v": 2562, "c": 1981}, "META": {"v": 1848, "c": 1988}, "GOOGL": {"v": 4229, "c": 3746}, "CRYPTO": {"v": 2994, "c": 6400}, "WDS": {"v": 266, "c": null}}, "Sep 23": {"BHP": {"v": 1694, "c": 2017}, "NVA": {"v": 645, "c": 2019}, "RIO": {"v": 1679, "c": 1925}, "NAS100": {"v": 13122, "c": 9986}, "MSFT": {"v": 2497, "c": 1981}, "META": {"v": 1914, "c": 1988}, "GOOGL": {"v": 4235, "c": 3747}, "CRYPTO": {"v": 2602, "c": 6400}, "WDS": {"v": 240, "c": null}}, "Oct 23": {"BHP": {"v": 1775, "c": 2018}, "NVA": {"v": 730, "c": 2020}, "RIO": {"v": 1839, "c": 1925}, "NAS100": {"v": 13081, "c": 9985}, "MSFT": {"v": 2686, "c": 1981}, "META": {"v": 1918, "c": 1988}, "GOOGL": {"v": 3933, "c": 3747}, "CRYPTO": {"v": 5793, "c": 8400}, "WDS": {"v": 238, "c": null}}, "Nov 23": {"BHP": {"v": 1807, "c": 2017}, "NVA": {"v": 772, "c": 2020}, "RIO": {"v": 1874, "c": 1925}, "NAS100": {"v": 13629, "c": 9985}, "MSFT": {"v": 2812, "c": 1981}, "META": {"v": 1951, "c": 1988}, "GOOGL": {"v": 3960, "c": 3746}, "CRYPTO": {"v": 6629, "c": 8400}, "WDS": {"v": 216, "c": null}}, "Dec 23": {"BHP": {"v": 1966, "c": 2017}, "NVA": {"v": 1010, "c": 2019}, "RIO": {"v": 2035, "c": 1925}, "NAS100": {"v": 13980, "c": 9985}, "MSFT": {"v": 2741, "c": 1980}, "META": {"v": 2064, "c": 1988}, "GOOGL": {"v": 4074, "c": 3747}, "CRYPTO": {"v": 8212, "c": 8400}, "WDS": {"v": 217, "c": null}}, "Jan 24": {"BHP": {"v": 1857, "c": 2017}, "NVA": {"v": 898, "c": 2020}, "RIO": {"v": 1999, "c": 1925}, "NAS100": {"v": 15047, "c": 9985}, "MSFT": {"v": 3051, "c": 1981}, "META": {"v": 2386, "c": 1988}, "GOOGL": {"v": 4266, "c": 3746}, "CRYPTO": {"v": 5780, "c": 8400}, "WDS": {"v": 225, "c": null}}, "Feb 24": {"BHP": {"v": 1752, "c": 2017}, "NVA": {"v": 730, "c": 2020}, "RIO": {"v": 1873, "c": 1925}, "NAS100": {"v": 15714, "c": 9985}, "MSFT": {"v": 3156, "c": 1981}, "META": {"v": 2991, "c": 1988}, "GOOGL": {"v": 4225, "c": 3747}, "CRYPTO": {"v": 5212, "c": 8400}, "WDS": {"v": 225, "c": null}}, "Mar 24": {"BHP": {"v": 1727, "c": 2018}, "NVA": {"v": 702, "c": 2020}, "RIO": {"v": 1827, "c": 1926}, "NAS100": {"v": 15845, "c": 9985}, "MSFT": {"v": 3207, "c": 1980}, "META": {"v": 2962, "c": 1989}, "GOOGL": {"v": 4603, "c": 3747}, "CRYPTO": {"v": 5953, "c": 10400}, "WDS": {"v": 214, "c": null}}, "Apr 24": {"BHP": {"v": 1659, "c": 2018}, "NVA": {"v": 758, "c": 2020}, "RIO": {"v": 1944, "c": 1925}, "NAS100": {"v": 15196, "c": 9985}, "MSFT": {"v": 3010, "c": 1981}, "META": {"v": 2673, "c": 1988}, "GOOGL": {"v": 5042, "c": 3746}, "CRYPTO": {"v": 3928, "c": 10400}, "WDS": {"v": 190, "c": null}}, "May 24": {"BHP": {"v": 1736, "c": 2017}, "NVA": {"v": 645, "c": 2019}, "RIO": {"v": 1934, "c": 1925}, "NAS100": {"v": 15763, "c": 9985}, "MSFT": {"v": 3100, "c": 1981}, "META": {"v": 2789, "c": 1989}, "GOOGL": {"v": 5152, "c": 3747}, "CRYPTO": {"v": 3283, "c": 10400}, "WDS": {"v": 194, "c": null}}, "Jun 24": {"BHP": {"v": 1744, "c": 2017}, "NVA": {"v": 589, "c": 2019}, "RIO": {"v": 1861, "c": 1925}, "NAS100": {"v": 16651, "c": 9986}, "MSFT": {"v": 3408, "c": 1980}, "META": {"v": 3018, "c": 1988}, "GOOGL": {"v": 5500, "c": 3748}, "CRYPTO": {"v": 2176, "c": 10400}, "WDS": {"v": 206, "c": null}}, "Jul 24": {"BHP": {"v": 1594, "c": 2018}, "NVA": {"v": 365, "c": 2020}, "RIO": {"v": 1747, "c": 1925}, "NAS100": {"v": 17882, "c": 12483}, "MSFT": {"v": 3065, "c": 1981}, "META": {"v": 3127, "c": 1989}, "GOOGL": {"v": 4942, "c": 3747}, "CRYPTO": {"v": 1727, "c": 10400}, "WDS": {"v": 178, "c": null}}, "Aug 24": {"BHP": {"v": 1590, "c": 2017}, "NVA": {"v": 434, "c": 2019}, "RIO": {"v": 1673, "c": 1925}, "NAS100": {"v": 18754, "c": 12964}, "MSFT": {"v": 3062, "c": 1981}, "META": {"v": 3061, "c": 1988}, "GOOGL": {"v": 4797, "c": 3747}, "CRYPTO": {"v": 1533, "c": 10400}, "WDS": {"v": 190, "c": null}}, "Sep 24": {"BHP": {"v": 1757, "c": 2017}, "NVA": {"v": 407, "c": 2020}, "RIO": {"v": 1889, "c": 1925}, "NAS100": {"v": 19738, "c": 13913}, "MSFT": {"v": 3029, "c": 1981}, "META": {"v": 3320, "c": 1988}, "GOOGL": {"v": 4809, "c": 3747}, "CRYPTO": {"v": 1419, "c": 10400}, "WDS": {"v": 181, "c": null}}, "Nov 24": {"BHP": {"v": 1601, "c": 2017}, "NVA": {"v": 687, "c": 2019}, "RIO": {"v": 1801, "c": 1925}, "NAS100": {"v": 24841, "c": 15826}, "MSFT": {"v": 3341, "c": 1980}, "META": {"v": 3804, "c": 1988}, "GOOGL": {"v": 5311, "c": 3747}, "CRYPTO": {"v": 7262, "c": 10400}, "WDS": {"v": 174, "c": null}}, "Dec 24": {"BHP": {"v": 1540, "c": 2017}, "NVA": {"v": 1038, "c": 2019}, "RIO": {"v": 1761, "c": 1925}, "NAS100": {"v": 26479, "c": 16740}, "MSFT": {"v": 3395, "c": 1980}, "META": {"v": 3780, "c": 1988}, "GOOGL": {"v": 6114, "c": 3747}, "CRYPTO": {"v": 5622, "c": 11900}, "WDS": {"v": 172, "c": null}}, "Jan 25": {"BHP": {"v": 1558, "c": 2017}, "NVA": {"v": 954, "c": 2019}, "RIO": {"v": 1761, "c": 1925}, "NAS100": {"v": 27916, "c": 17666}, "MSFT": {"v": 3319, "c": 1981}, "META": {"v": 4409, "c": 1989}, "GOOGL": {"v": 6525, "c": 3746}, "CRYPTO": {"v": 5353, "c": 11500}, "WDS": {"v": 172, "c": null}}, "Feb 25": {"BHP": {"v": 1516, "c": 2018}, "NVA": {"v": 786, "c": 2020}, "RIO": {"v": 1700, "c": 1925}, "NAS100": {"v": 27408, "c": 18593}, "MSFT": {"v": 3138, "c": 1981}, "META": {"v": 4210, "c": 1989}, "GOOGL": {"v": 5387, "c": 3746}, "CRYPTO": {"v": 3324, "c": 11500}, "WDS": {"v": 174, "c": null}}, "Mar 25": {"BHP": {"v": 1461, "c": 2018}, "NVA": {"v": 758, "c": 2020}, "RIO": {"v": 1674, "c": 1925}, "NAS100": {"v": 27352, "c": 20962}, "MSFT": {"v": 3025, "c": 1980}, "META": {"v": 3698, "c": 1988}, "GOOGL": {"v": 4973, "c": 3746}, "CRYPTO": {"v": 2446, "c": 11500}, "WDS": {"v": 159, "c": null}}, "Apr 25": {"BHP": {"v": 1485, "c": 2017}, "NVA": {"v": 954, "c": 2019}, "RIO": {"v": 1750, "c": 1925}, "NAS100": {"v": 30183, "c": 22930}, "MSFT": {"v": 3285, "c": 1980}, "META": {"v": 3535, "c": 1988}, "GOOGL": {"v": 4983, "c": 3747}, "CRYPTO": {"v": 2270, "c": 11500}, "WDS": {"v": 144, "c": null}}, "May 25": {"BHP": {"v": 1481, "c": 2017}, "NVA": {"v": 1108, "c": 2019}, "RIO": {"v": 1650, "c": 1925}, "NAS100": {"v": 33640, "c": 23890}, "MSFT": {"v": 3542, "c": 1981}, "META": {"v": 4202, "c": 1988}, "GOOGL": {"v": 5132, "c": 3747}, "CRYPTO": {"v": 2048, "c": 11500}, "WDS": {"v": 160, "c": null}}, "Aug 25": {"BHP": {"v": 1637, "c": 2017}, "NVA": {"v": 856, "c": 2020}, "RIO": {"v": 1742, "c": 1925}, "NAS100": {"v": 35820, "c": 23890}, "MSFT": {"v": 3847, "c": 1981}, "META": {"v": 4489, "c": 1988}, "GOOGL": {"v": 7024, "c": 3747}, "CRYPTO": {"v": 2500, "c": 11500}, "WDS": {"v": 180, "c": null}}, "Sep 25": {"BHP": {"v": 1659, "c": 2017}, "NVA": {"v": 1235, "c": 2020}, "RIO": {"v": 1830, "c": 1925}, "NAS100": {"v": 37208, "c": 23890}, "MSFT": {"v": 3871, "c": 1980}, "META": {"v": 4474, "c": 1988}, "GOOGL": {"v": 7344, "c": 3747}, "CRYPTO": {"v": 2247, "c": 11500}, "WDS": {"v": 161, "c": null}, "SCAPS": {"v": 10335, "c": 10000}}, "Oct 25": {"BHP": {"v": 1725, "c": 2017}, "NVA": {"v": 2301, "c": 2020}, "RIO": {"v": 2006, "c": 2002}, "NAS100": {"v": 39713, "c": 23890}, "MSFT": {"v": 4083, "c": 1981}, "META": {"v": 4534, "c": 1989}, "GOOGL": {"v": 8280, "c": 3747}, "CRYPTO": {"v": 1872, "c": 11500}, "WDS": {"v": 161, "c": null}, "SCAPS": {"v": 11342, "c": 11400}}, "Nov 25": {"BHP": {"v": 1660, "c": 2017}, "NVA": {"v": 3073, "c": 2020}, "RIO": {"v": 2025, "c": 1924}, "NAS100": {"v": 38555, "c": 23889}, "MSFT": {"v": 3695, "c": 1981}, "META": {"v": 3892, "c": 1988}, "GOOGL": {"v": 9561, "c": 3747}, "CRYPTO": {"v": 1071, "c": 11500}, "WDS": {"v": 178, "c": null}, "SCAPS": {"v": 10729, "c": 11400}}, "Dec 25": {"BHP": {"v": 1842, "c": 2018}, "NVA": {"v": 2455, "c": 2019}, "RIO": {"v": 2284, "c": 1925}, "NAS100": {"v": 37756, "c": 23889}, "MSFT": {"v": 3496, "c": 1981}, "META": {"v": 3896, "c": 1988}, "GOOGL": {"v": 9361, "c": 3747}, "CRYPTO": {"v": 1071, "c": 11500}, "WDS": {"v": 165, "c": null}, "SCAPS": {"v": 12469, "c": 11400}}, "Jan 26": {"BHP": {"v": 2009, "c": 2017}, "NVA": {"v": 3536, "c": 2020}, "RIO": {"v": 2356, "c": 1925}, "NAS100": {"v": 36714, "c": 23890}, "MSFT": {"v": 3390, "c": 1980}, "META": {"v": 3766, "c": 1988}, "GOOGL": {"v": 9461, "c": 3747}, "ACDC": {"v": 4783, "c": 4920}, "CRYPTO": {"v": 2018, "c": 11500}, "WDS": {"v": 176, "c": null}, "SCAPS": {"v": 13796, "c": 11400}, "NIC": {"v": 2547, "c": 2517}, "URNM": {"v": 5243, "c": 5025}, "WIRE": {"v": 5232, "c": 5015}}, "Feb 26": {"BHP": {"v": 2276, "c": 2017}, "NVA": {"v": 2685, "c": 2019}, "RIO": {"v": 2497, "c": 1925}, "NAS100": {"v": 34825, "c": 23890}, "MSFT": {"v": 2789, "c": 1981}, "META": {"v": 3659, "c": 1989}, "GOOGL": {"v": 8580, "c": 3747}, "ACDC": {"v": 4688, "c": 4920}, "CRYPTO": {"v": 2628, "c": 11500}, "WDS": {"v": 212, "c": null}, "SCAPS": {"v": 12379, "c": 11400}, "NIC": {"v": 2605, "c": 2517}, "URNM": {"v": 5255, "c": 5025}, "WIRE": {"v": 5478, "c": 5015}, "USETFS": {"v": 8709, "c": 8761}, "SLVM": {"v": 1650, "c": 1819}}, "Mar 26": {"BHP": {"v": 1994, "c": 2017}, "NVA": {"v": 1894, "c": 2019}, "RIO": {"v": 2424, "c": 1925}, "NAS100": {"v": 34310, "c": 23889}, "MSFT": {"v": 2649, "c": 1980}, "META": {"v": 3324, "c": 1988}, "GOOGL": {"v": 8533, "c": 3747}, "ACDC": {"v": 4691, "c": 4920}, "CRYPTO": {"v": 2550, "c": 11500}, "WDS": {"v": 244, "c": null}, "SCAPS": {"v": 9948, "c": 11400}, "NIC": {"v": 2416, "c": 2517}, "URNM": {"v": 4696, "c": 5025}, "WIRE": {"v": 4598, "c": 5015}, "USETFS": {"v": 7377, "c": 8761}, "SLVM": {"v": 1280, "c": 1819}}, "Apr 26": {"BHP": {"v": 2143, "c": 2017}, "NVA": {"v": 1838, "c": 2020}, "RIO": {"v": 2580, "c": 1925}, "NAS100": {"v": 38142, "c": 23889}, "MSFT": {"v": 2817, "c": 1981}, "META": {"v": 3381, "c": 1988}, "GOOGL": {"v": 10632, "c": 3747}, "ACDC": {"v": 5633, "c": 4920}, "CRYPTO": {"v": 2966, "c": 11500}, "WDS": {"v": 232, "c": null}, "SCAPS": {"v": 10507, "c": 11400}, "NIC": {"v": 2797, "c": 2517}, "URNM": {"v": 4581, "c": 5527}, "WIRE": {"v": 5286, "c": 5519}, "USETFS": {"v": 8454, "c": 9576}, "SLVM": {"v": 4532, "c": 4565}}, "May 26": {"BHP": {"v": 2430, "c": 2017}, "NVA": {"v": 2119, "c": 2020}, "RIO": {"v": 2784, "c": 1925}, "NAS100": {"v": 42123, "c": 23889}, "MSFT": {"v": 3112, "c": 1981}, "META": {"v": 3498, "c": 1988}, "GOOGL": {"v": 10517, "c": 3747}, "ACDC": {"v": 5714, "c": 4920}, "CRYPTO": {"v": 2239, "c": 11500}, "WDS": {"v": 215, "c": null}, "SCAPS": {"v": 9987, "c": 11400}, "NIC": {"v": 2784, "c": 2517}, "URNM": {"v": 4351, "c": 5527}, "WIRE": {"v": 5172, "c": 5519}, "USETFS": {"v": 7663, "c": 9576}, "SLVM": {"v": 4069, "c": 4499}}}};
+
+// Merge any months added via Update (kept in sync on save)
+(function mergeMonthlyFull(){
+  try {
+    const saved = localStorage.getItem('inv_monthlyfull_added');
+    if(saved){
+      const extra = JSON.parse(saved); // {label, holdings:{key:{v,c}}}
+      extra.forEach(entry => {
+        if(!MONTHLY_FULL.labels.includes(entry.label)){
+          MONTHLY_FULL.labels.push(entry.label);
+        }
+        MONTHLY_FULL.monthly[entry.label] = entry.holdings;
+      });
+    }
+  } catch(e){}
+})();
+
+function renderHistory(){
+  // Portfolio-level monthly table, derived from the H array. Newest first.
+  const thead = document.getElementById('hist-thead');
+  thead.innerHTML = `<tr>
+    <th style="text-align:left">Month</th>
+    <th style="text-align:right">Value</th>
+    <th style="text-align:right">Own cash</th>
+    <th style="text-align:right">Added</th>
+    <th style="text-align:right">Total P&L</th>
+    <th style="text-align:right">Return %</th>
+    <th style="text-align:right">IVV benchmark</th>
+    <th style="text-align:right">vs IVV</th>
+  </tr>`;
+
+  const tbody = document.getElementById('hist-tbody');
+  tbody.innerHTML = '';
+  // Build rows oldest->newest first so we can compute "added capital", then reverse for display
+  const built = [];
+  let prevOwn = null;
+  H.forEach(h => {
+    const [label,val,cost,pl,tp,bench,price] = h;
+    const own = tp ? cost - TP : cost;
+    const added = prevOwn===null ? own : own - prevOwn;
+    const ret = val - own;
+    const retp = own>0 ? (ret/own)*100 : 0;
+    const vsBench = val - bench;
+    built.push({label,val,own,added,pl,retp,bench,vsBench});
+    prevOwn = own;
+  });
+  built.reverse();   // newest first
+
+  built.forEach(r => {
+    const addedCell = r.added>0
+      ? `<td class="neutral">${fv(r.added)}</td>`
+      : `<td style="color:var(--muted)">—</td>`;
+    tbody.innerHTML += `<tr>
+      <td style="font-weight:500">${r.label}</td>
+      <td>${fv(r.val)}</td>
+      <td class="neutral">${fv(r.own)}</td>
+      ${addedCell}
+      <td class="${r.pl>=0?'pos':'neg'}">${fp(r.pl)}</td>
+      <td class="${r.retp>=0?'pos':'neg'}">${fpc(r.retp)}</td>
+      <td style="color:var(--orange)">${fv(r.bench)}</td>
+      <td class="${r.vsBench>=0?'pos':'neg'}">${fp(r.vsBench)}</td>
+    </tr>`;
+  });
+}
+
+function renderHoldingHist(){
+  const sel = document.getElementById('hh-month');
+  // Populate selector once (newest first)
+  if(sel && !sel.options.length){
+    const labels = [...MONTHLY_FULL.labels].reverse();
+    labels.forEach(l => {
+      const o = document.createElement('option');
+      o.value = l; o.textContent = l;
+      sel.appendChild(o);
+    });
+  }
+  const month = sel ? sel.value : MONTHLY_FULL.labels[MONTHLY_FULL.labels.length-1];
+  const snap = MONTHLY_FULL.monthly[month] || {};
+  const nameOf = k => { const d=DEF.find(x=>x.key===k); return d?d.name:k; };
+
+  const tbody = document.getElementById('hh-tbody');
+  tbody.innerHTML = '';
+  let totV=0, totC=0;
+  // Order holdings by current DEF order
+  DEF.forEach(d => {
+    const s = snap[d.key];
+    if(!s) return;
+    const v = s.v, c = s.c;
+    const ci = DEF.findIndex(x=>x.key===d.key);
+    const col = COL[ci%COL.length];
+    const hasCost = c!==null && c!==undefined && c>0;
+    const pl = hasCost ? v-c : null;
+    const plp = hasCost ? (pl/c)*100 : null;
+    const pc = pl===null?'neutral':pl>=0?'pos':'neg';
+    totV += v; if(hasCost) totC += c;
+    tbody.innerHTML += `<tr>
+      <td><span class="ticker" style="color:${col}">${nameOf(d.key)}</span></td>
+      <td>${fv(v)}</td>
+      <td class="neutral">${hasCost?fv(c):'—'}</td>
+      <td class="${pc}">${pl!==null?fp(pl):'—'}</td>
+      <td class="${pc}">${plp!==null?fpc(plp):'—'}</td>
+    </tr>`;
+  });
+  // Total row
+  const totPL = totV - totC;
+  tbody.innerHTML += `<tr class="tot-row">
+    <td>Total</td>
+    <td>${fv(totV)}</td>
+    <td class="neutral">${fv(totC)}</td>
+    <td class="${totPL>=0?'pos':'neg'}">${fp(totPL)}</td>
+    <td class="${totPL>=0?'pos':'neg'}">${totC>0?fpc(totPL/totC*100):'—'}</td>
+  </tr>`;
+}
+
 // ── TABS ─────────────────────────────────────────────────────────────────────
-const TABS=['home','holdings','allocation','stockperf','update'];
+const TABS=['home','holdings','allocation','stockperf','history','holdinghist','update'];
 function switchTab(name){
   TABS.forEach(t=>document.getElementById('tab-'+t).style.display=t===name?'':'none');
   document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===name));
   if(name==='holdings')   renderHoldings();
   if(name==='allocation') setTimeout(()=>buildAllocChart('ca-full','leg-full',false),30);
   if(name==='stockperf')  setTimeout(renderStockPerf,30);
+  if(name==='history')    renderHistory();
+  if(name==='holdinghist') renderHoldingHist();
   if(name==='update'){    renderEditForm(); populateUpdateExtras(); }
 }
 document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>switchTab(b.dataset.tab)));
@@ -859,6 +1022,21 @@ function saveEdits(){
   });
   saveObj('inv_addedmonths', added);
 
+  // Record per-holding value + cost for this month (Holding history tab)
+  const snapHoldings = {};
+  hlds.forEach(h => { snapHoldings[h.key] = { v: h.val, c: h.cost }; });
+  const mfAdded = loadObj('inv_monthlyfull_added', []);
+  const mfIdx = mfAdded.findIndex(e => e.label === newLabel);
+  if(mfIdx >= 0) mfAdded[mfIdx] = { label:newLabel, holdings:snapHoldings };
+  else mfAdded.push({ label:newLabel, holdings:snapHoldings });
+  saveObj('inv_monthlyfull_added', mfAdded);
+  // Keep in-memory MONTHLY_FULL in sync so the tab shows it without reload
+  if(!MONTHLY_FULL.labels.includes(newLabel)) MONTHLY_FULL.labels.push(newLabel);
+  MONTHLY_FULL.monthly[newLabel] = snapHoldings;
+  // Reset the month selector so it repopulates with the new month
+  const hhSel = document.getElementById('hh-month');
+  if(hhSel) hhSel.innerHTML = '';
+
   // Roll the home-page delta baseline: previous month = the P&L before this update
   prevMonthPL = beforePL;
   saveNum('inv_prevpl', prevMonthPL);
@@ -899,6 +1077,7 @@ function exportBackup(){
     exportedAt: new Date().toISOString(),
     holdings: hlds,
     addedMonths: loadObj('inv_addedmonths', []),
+    monthlyFullAdded: loadObj('inv_monthlyfull_added', []),
     prevMonthPL, prevStockPL, prevStockLabel, curStockLabel,
     currentIvvPrice, ivvUnitsExtra
   };
@@ -922,6 +1101,7 @@ function importBackup(event){
       const b = JSON.parse(e.target.result);
       if(b.holdings){ hlds = b.holdings; saveH(); }
       if(b.addedMonths){ saveObj('inv_addedmonths', b.addedMonths); }
+      if(b.monthlyFullAdded){ saveObj('inv_monthlyfull_added', b.monthlyFullAdded); }
       if(b.prevMonthPL!==undefined){ prevMonthPL=b.prevMonthPL; saveNum('inv_prevpl',prevMonthPL); }
       if(b.prevStockPL){ prevStockPL=b.prevStockPL; saveObj('inv_prevstockpl',prevStockPL); }
       if(b.prevStockLabel){ prevStockLabel=b.prevStockLabel; saveStr('inv_prevstocklabel',prevStockLabel); }
